@@ -1,20 +1,30 @@
 from datetime import datetime
-from pydantic import BaseModel
-from typing import List
+from pydantic import model_serializer, BaseModel, Field
+from typing import List, Optional
 
 
 class EventBase(BaseModel):
-    id: int
+    '''
+    Базовая модель с общими полями.
+    '''
     name: str
-    description: str | None = None
+    description: str
 
 
 class EventCreate(EventBase):
-    pass
+    '''
+    Модель для POST запросов (создания событий).
+    Содержит поля, которые принимаются от клиента.
+    '''
+    location: str
+    date: str
+    max_participants: int
+    color: str
 
 
-class EventResponse(EventBase):
-    created_at: datetime
+class EventResponse(EventCreate):
+    id: int
+    created_at: str
 
 
 class EventListResponse(BaseModel):
