@@ -1,13 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from httpx import HTTPStatusError
 from fastapi import APIRouter, HTTPException, Request
 
 from app.services.router_service import RouterService
+import ryadom_common.schemas.events as schemas_events
+import ryadom_common.schemas.users as schemas_users
 
 
 router = APIRouter()
 router_service = RouterService()
+
+
+@router.post('/users/', response_model=schemas_users.UserResponse)
+async def post_event(request: Request, user: schemas_users.UserCreate):
+    try:
+        user_data = await router_service.post_user_to_user_service(user)
+        return user_data
+    except HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get('/users/')
@@ -28,20 +42,22 @@ async def get_user(request: Request, user_id: int):
         raise HTTPException(status_code=404, detail=str(e))
     
 
+@router.post('/events/', response_model=schemas_events.EventResponse)
+async def post_event(request: Request, event: schemas_events.EventCreate):
+    try:
+        event_data = await router_service.post_event_to_event_service(event)
+        return event_data
+    except HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get('/events/')
 async def get_events(request: Request):
     try:
         events_data = await router_service.get_all_events_from_event_service()
         return events_data
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    
-
-@router.post('/events/')
-async def post_event(request: Request, event_data: dict):
-    try:
-        event_data = await router_service.post_event_to_event_service(event_data)
-        return event_data
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -53,7 +69,7 @@ async def get_event(request: Request, event_id: int):
         return event_data
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
-    
+
 
 @router.put('/events/{event_id}')
 async def update_event(request: Request, event_id: int, event_data: dict):

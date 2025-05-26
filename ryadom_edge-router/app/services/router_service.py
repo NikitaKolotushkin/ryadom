@@ -1,6 +1,9 @@
 import httpx
 import typing
 
+import ryadom_common.schemas.events as schemas_events
+from fastapi import HTTPException
+
 
 class RouterService:
 
@@ -10,14 +13,24 @@ class RouterService:
 
     # USERS
 
+    async def post_user_to_user_service(self):
+        pass
+
     async def get_all_users_from_user_service(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.users_service_url}/users/')
+
             return response.json()
 
     async def get_user_from_user_service(self, user_id: int):
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.users_service_url}/users/{user_id}')
+
+            if response.status_code == 404:
+                raise HTTPException(status_code=404, detail="User not found")
+            
+            response.raise_for_status()
+
             return response.json()
         
     # EVENTS
@@ -25,16 +38,26 @@ class RouterService:
     async def get_all_events_from_event_service(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.events_service_url}/events/')
+            
             return response.json()
         
     async def get_event_from_event_service(self, event_id: int):
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.events_service_url}/events/{event_id}')
+
+            if response.status_code == 404:
+                raise HTTPException(status_code=404, detail="Event not found")
+            
+            response.raise_for_status()
+
             return response.json()
 
-    async def post_event_to_event_service(self, event_data: typing.Dict):
+    async def post_event_to_event_service(self, event_data: schemas_events.EventCreate):
         async with httpx.AsyncClient() as client:
-            response = await client.post(f'{self.events_service_url}/events/', json=event_data)
+            response = await client.post(f'{self.events_service_url}/events/', json=event_data.model_dump())
+
+            response.raise_for_status()
+
             return response.json()
 
     async def delete_event_from_event_service(self, event_id: int):
