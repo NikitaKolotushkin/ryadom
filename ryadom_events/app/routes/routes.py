@@ -21,17 +21,41 @@ async def get_all_events(request: Request):
 
 @router.get("/events/{event_id}", response_model=schemas_events.EventResponse)
 async def get_event_by_id(request: Request, event_id: int) -> typing.Dict | None:
-    event = await events_service.get_event_by_id(event_id)
+    try:
+        event = await events_service.get_event_by_id(event_id)
+        return event
 
-    if not event:
-        raise HTTPException(status_code=404)
-    
-    return event
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("/events/", response_model=schemas_events.EventResponse, status_code=201)
 async def create_event(request: Request, event: schemas_events.EventCreate):
     try:
         return await events_service.create_event(event)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+
+@router.put("/events/{event_id}", response_model=schemas_events.EventResponse, status_code=200)
+async def update_event(request: Request, event_id: int, event: schemas_events.EventCreate):
+    try:
+        return await events_service.update_event(event_id, event)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.delete("/events/{event_id}", response_model=schemas_events.EventResponse, status_code=200)
+async def delete_event(request: Request, event_id: int):
+    try:
+        event = await events_service.delete_event(event_id)
+        return event
+    
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

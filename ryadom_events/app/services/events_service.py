@@ -28,18 +28,69 @@ class EventsService:
         ]}
 
     async def get_all_events(self):
+        """
+        Получить все события
+        """
         return schemas_events.EventListResponse(
             events=[schemas_events.EventResponse(**event) for event in self.in_memory_data_base["events"]]
         )
 
     async def get_event_by_id(self, event_id: int):
+        """
+        Получить событие по его id
+        
+        Args:
+            event_id: id события
+        
+        Returns:
+            EventResponse: событие
+
+        Raises:
+            ValueError: если событие не было найдено
+        """
+        
+        event_to_return = None
+        
         for event in self.in_memory_data_base["events"]:
             if event["id"] == event_id:
-                return schemas_events.EventResponse(**event)
+                event_to_return = event
+                break
+
+        if not event_to_return:
+            raise ValueError(f'event with id {event_id} not found')
+
+        return schemas_events.EventResponse(**event)
             
     async def create_event(self, event: schemas_events.EventCreate):
-    
         new_event = schemas_events.EventResponse(id=1, created_at=datetime.now().isoformat(), **event.model_dump())
 
         self.in_memory_data_base["events"].append(new_event.model_dump())
         return new_event
+    
+    async def delete_event(self, event_id: int):
+
+        """
+        Удалить событие по его id
+        
+        Args:
+            event_id: id события
+        
+        Returns:
+            EventResponse: событие
+
+        Raises:
+            ValueError: если событие не было найдено
+        """
+
+        event_to_delete = None
+
+        for event in self.in_memory_data_base["events"]:
+            if event["id"] == event_id:
+                event_to_delete = event
+                break
+
+        if not event_to_delete:
+            raise ValueError(f'event with id {event_id} not found')
+        
+        self.in_memory_data_base["events"].remove(event)
+        return schemas_events.EventResponse(**event_to_delete)
