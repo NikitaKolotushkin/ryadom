@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from fastapi import FastAPI
+
 from app.routes.routes import router
 
 
