@@ -41,9 +41,14 @@ async def create_event(request: Request, event: schemas_events.EventCreate):
     
 
 @router.put("/events/{event_id}", response_model=schemas_events.EventResponse, status_code=200)
-async def update_event(request: Request, event_id: int, event: schemas_events.EventCreate):
+async def update_event(request: Request, event_id: int, event_data: schemas_events.EventCreate):
     try:
-        return await events_service.update_event(event_id, event)
+        event = await events_service.update_event(event_id, event_data)
+        return event
+    
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

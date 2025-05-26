@@ -30,6 +30,9 @@ class EventsService:
     async def get_all_events(self):
         """
         Получить все события
+        
+        Returns:
+            EventListResponse: список событий
         """
         return schemas_events.EventListResponse(
             events=[schemas_events.EventResponse(**event) for event in self.in_memory_data_base["events"]]
@@ -62,13 +65,49 @@ class EventsService:
         return schemas_events.EventResponse(**event)
             
     async def create_event(self, event: schemas_events.EventCreate):
+        """
+        Создать новое событие
+
+        Args:
+            event: данные события
+
+        Returns:
+            EventResponse: созданное событие
+        """
         new_event = schemas_events.EventResponse(id=1, created_at=datetime.now().isoformat(), **event.model_dump())
 
         self.in_memory_data_base["events"].append(new_event.model_dump())
         return new_event
     
-    async def delete_event(self, event_id: int):
+    async def update_event(self, event_id: int, event_data: schemas_events.EventCreate):
+        """
+        Обновить событие по его id
 
+        Args:
+            event_id: id события
+            event: данные события
+
+        Returns:
+            EventResponse: обновленное событие
+
+        Raises:
+            ValueError: если событие не было найдено
+        """
+
+        event_to_update = None
+
+        for event in self.in_memory_data_base["events"]:
+            if event["id"] == event_id:
+                event_to_update = event
+                break
+
+        if not event_to_update:
+            raise ValueError(f'event with id {event_id} not found')
+
+        event_to_update.update(event_data.model_dump())
+        return schemas_events.EventResponse(**event_to_update)
+
+    async def delete_event(self, event_id: int):
         """
         Удалить событие по его id
         

@@ -13,6 +13,8 @@ router = APIRouter()
 router_service = RouterService()
 
 
+# USERS
+
 @router.post('/users/', response_model=schemas_users.UserResponse)
 async def post_event(request: Request, user: schemas_users.UserCreate):
     try:
@@ -40,7 +42,9 @@ async def get_user(request: Request, user_id: int):
         return user_data
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
-    
+
+
+# EVENTS    
 
 @router.post('/events/', response_model=schemas_events.EventResponse)
 async def post_event(request: Request, event: schemas_events.EventCreate):
@@ -72,10 +76,10 @@ async def get_event(request: Request, event_id: int):
 
 
 @router.put('/events/{event_id}')
-async def update_event(request: Request, event_id: int, event_data: dict):
+async def update_event(request: Request, event_id: int, event_data: schemas_events.EventCreate):
     try:
-        event_data = await router_service.update_event_from_event_service(event_id, event_data)
-        return event_data
+        event_data_ = await router_service.update_event_from_event_service(event_id, event_data)
+        return event_data_
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 

@@ -62,8 +62,11 @@ class RouterService:
         
     async def update_event_from_event_service(self, event_id: int, event_data: schemas_events.EventCreate):
         async with httpx.AsyncClient() as client:
-            response = await client.put(f'{self.events_service_url}/events/{event_id}', json=event_data)
-            return response
+            response = await client.put(f'{self.events_service_url}/events/{event_id}', json=event_data.model_dump())
+            
+            response.raise_for_status()
+            
+            return response.json()
 
     async def delete_event_from_event_service(self, event_id: int):
         async with httpx.AsyncClient() as client:
