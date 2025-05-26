@@ -28,6 +28,21 @@ class EventsService:
                 },
         ]}
 
+    async def create_event(self, event: schemas_events.EventCreate):
+        """
+        Создать новое событие
+
+        Args:
+            event: данные события
+
+        Returns:
+            EventResponse: созданное событие
+        """
+        new_event = schemas_events.EventResponse(id=1, created_at=datetime.now().isoformat(), **event.model_dump())
+
+        self.in_memory_data_base["events"].append(new_event.model_dump())
+        return new_event
+
     async def get_all_events(self):
         """
         Получить все события
@@ -64,21 +79,6 @@ class EventsService:
             raise ValueError(f'event with id {event_id} not found')
 
         return schemas_events.EventResponse(**event)
-            
-    async def create_event(self, event: schemas_events.EventCreate):
-        """
-        Создать новое событие
-
-        Args:
-            event: данные события
-
-        Returns:
-            EventResponse: созданное событие
-        """
-        new_event = schemas_events.EventResponse(id=1, created_at=datetime.now().isoformat(), **event.model_dump())
-
-        self.in_memory_data_base["events"].append(new_event.model_dump())
-        return new_event
     
     async def update_event(self, event_id: int, event_data: schemas_events.EventCreate):
         """

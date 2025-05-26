@@ -35,6 +35,14 @@ class RouterService:
         
     # EVENTS
 
+    async def post_event_to_event_service(self, event_data: schemas_events.EventCreate):
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f'{self.events_service_url}/events/', json=event_data.model_dump())
+
+            response.raise_for_status()
+
+            return response.json()
+
     async def get_all_events_from_event_service(self):
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.events_service_url}/events/')
@@ -48,14 +56,6 @@ class RouterService:
             if response.status_code == 404:
                 raise HTTPException(status_code=404, detail="Event not found")
             
-            response.raise_for_status()
-
-            return response.json()
-
-    async def post_event_to_event_service(self, event_data: schemas_events.EventCreate):
-        async with httpx.AsyncClient() as client:
-            response = await client.post(f'{self.events_service_url}/events/', json=event_data.model_dump())
-
             response.raise_for_status()
 
             return response.json()

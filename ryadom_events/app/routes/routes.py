@@ -13,6 +13,14 @@ router = APIRouter()
 events_service = EventsService()
 
 
+@router.post("/events/", response_model=schemas_events.EventResponse, status_code=201)
+async def create_event(request: Request, event: schemas_events.EventCreate):
+    try:
+        return await events_service.create_event(event)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @router.get("/events/", response_model=schemas_events.EventListResponse)
 async def get_all_events(request: Request):
     events = await events_service.get_all_events()
@@ -28,14 +36,6 @@ async def get_event_by_id(request: Request, event_id: int) -> typing.Dict | None
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.post("/events/", response_model=schemas_events.EventResponse, status_code=201)
-async def create_event(request: Request, event: schemas_events.EventCreate):
-    try:
-        return await events_service.create_event(event)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
