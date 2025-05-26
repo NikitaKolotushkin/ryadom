@@ -23,6 +23,10 @@ class EventCreate(EventBase):
 
 
 class EventResponse(EventCreate):
+    """
+    Модель для ответов (событий).
+    Содержит поля, которые возвращаются клиенту.
+    """
     id: int
     created_at: str
 
