@@ -16,6 +16,7 @@ class EventCreate(EventBase):
     Модель для POST запросов (создания событий).
     Содержит поля, которые принимаются от клиента.
     '''
+    photo: str
     location: str
     date: str
     max_participants: int

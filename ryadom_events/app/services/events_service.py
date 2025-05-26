@@ -19,6 +19,7 @@ class EventsService:
                     "id": 0,
                     "name": "Event 0",
                     "description": "Description 0",
+                    "photo": "https://example.com/photo0.jpg",
                     "location": "Online",
                     "date": datetime.now().isoformat(),
                     "max_participants": 10,
