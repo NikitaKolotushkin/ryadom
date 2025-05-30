@@ -8,6 +8,7 @@ from fastapi import HTTPException
 class RouterService:
 
     def __init__(self):
+        self.front_end_service_url = 'http://127.0.0.1:8081'
         self.users_service_url = 'http://127.0.0.1:8082'
         self.events_service_url = 'http://127.0.0.1:8083'
 
