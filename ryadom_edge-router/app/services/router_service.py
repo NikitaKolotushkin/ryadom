@@ -1,7 +1,7 @@
 import httpx
 import typing
 
-import ryadom_common.schemas.events as schemas_events
+import ryadom_schemas.events as schemas_events
 from fastapi import HTTPException
 
 
