@@ -10,9 +10,8 @@ Event-management app
 
 ### Прочие указания
 
-**Запуск контейнера:**
+**Запуск docker-compose:**
 
 ```bash
-DOCKER_BUILDKIT=1 docker build --secret id=github_token,src=.github_token -t <container_name> .
-docker run -d -p 80:80 --name <container_name> <image_name>
+DOCKER_BUILDKIT=1 docker compose up --build -d
 ```
