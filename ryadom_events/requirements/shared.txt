@@ -1,1 +1,1 @@
-ryadom_schemas @ git+ssh://git@github.com/NikitaKolotushkin/ryadom_schemas.git@main#egg=ryadom_schemas
+ryadom_schemas @ git+https://${GITHUB_TOKEN}@github.com/NikitaKolotushkin/ryadom_schemas.git@main#egg=ryadom_schemas
