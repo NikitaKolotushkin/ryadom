@@ -6,7 +6,7 @@ import typing
 from fastapi import APIRouter, HTTPException, Request
 
 from app.services.events_service import EventsService
-import ryadom_common.schemas.events as schemas_events
+import ryadom_schemas.events as schemas_events
 
 
 router = APIRouter()
@@ -14,7 +14,7 @@ events_service = EventsService()
 
 
 @router.post("/events/", response_model=schemas_events.EventResponse, status_code=201)
-async def create_event(request: Request, event: schemas_events.EventCreate):
+async def create_event(request: Request, event: schemas_events.EventCreate):    
     try:
         return await events_service.create_event(event)
     except Exception as e:
