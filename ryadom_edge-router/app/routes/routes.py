@@ -5,8 +5,8 @@ from httpx import HTTPStatusError
 from fastapi import APIRouter, HTTPException, Request
 
 from app.services.router_service import RouterService
-import ryadom_common.schemas.events as schemas_events
-import ryadom_common.schemas.users as schemas_users
+import ryadom_schemas.events as schemas_events
+import ryadom_schemas.users as schemas_users
 
 
 router = APIRouter()
