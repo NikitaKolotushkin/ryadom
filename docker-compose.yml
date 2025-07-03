@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  edge-router:
+    build: 
+      context: ./ryadom_edge-router
+      secrets:
+        - github_token
+    networks:
+      - ryadom-network
+    ports:
+      - "8080:8080"
+    env_file:
+      - app.env
+
+  events:
+    build:
+      context: ./ryadom_events
+      secrets:
+        - github_token
+    networks:
+      - ryadom-network
+    ports:
+      - "8083:8083"
+    env_file:
+      - app.env
+
+networks:
+  ryadom-network:
+    name: ryadom_network
+
+secrets:
+  github_token:
+    file: .github_token
