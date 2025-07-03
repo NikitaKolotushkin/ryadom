@@ -139,7 +139,7 @@ env.bak/
 venv.bak/
 
 # Secrets
-.github_token
+.github_token_example
 
 # Spyder project settings
 .spyderproject
