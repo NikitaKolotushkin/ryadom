@@ -1,3 +1,4 @@
+import os
 import httpx
 import typing
 
@@ -8,9 +9,9 @@ from fastapi import HTTPException
 class RouterService:
 
     def __init__(self):
-        self.front_end_service_url = 'http://127.0.0.1:8081'
-        self.users_service_url = 'http://127.0.0.1:8082'
-        self.events_service_url = 'http://127.0.0.1:8083'
+        self.front_end_service_url = os.getenv("FRONT_END_SERVICE_URL")
+        self.users_service_url = os.getenv("USERS_SERVICE_URL")
+        self.events_service_url = os.getenv("EVENTS_SERVICE_URL")
 
     # USERS
 
