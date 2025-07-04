@@ -6,27 +6,18 @@ import typing
 
 import ryadom_schemas.events as schemas_events
 
+from app.models.event import EventModel
+
 from datetime import datetime
 from fastapi import HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class EventsService:
 
-    def __init__(self):
-        self.in_memory_data_base = {
-            "events": [
-                {
-                    "id": 0,
-                    "name": "Event 0",
-                    "description": "Description 0",
-                    "photo": "https://example.com/photo0.jpg",
-                    "location": "Online",
-                    "date": datetime.now().isoformat(),
-                    "max_participants": 10,
-                    "color": "#FF0000",
-                    "created_at": datetime.now().isoformat(),
-                },
-        ]}
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
     async def create_event(self, event: schemas_events.EventCreate):
         """
@@ -38,10 +29,14 @@ class EventsService:
         Returns:
             EventResponse: созданное событие
         """
-        new_event = schemas_events.EventResponse(id=1, created_at=datetime.now().isoformat(), **event.model_dump())
 
-        self.in_memory_data_base["events"].append(new_event.model_dump())
-        return new_event
+        new_event = EventModel(**event.model_dump(), created_at=datetime.now().isoformat())
+        self.session.add(new_event)
+
+        await self.session.commit()
+        await self.session.refresh(new_event)
+
+        return schemas_events.EventResponse.model_validate(new_event, from_attributes=True)
 
     async def get_all_events(self):
         """
@@ -50,8 +45,13 @@ class EventsService:
         Returns:
             EventListResponse: список событий
         """
+
+        result = await self.session.execute(select(EventModel))
+        
+        events = result.scalars().all()
+
         return schemas_events.EventListResponse(
-            events=[schemas_events.EventResponse(**event) for event in self.in_memory_data_base["events"]]
+            events=[schemas_events.EventResponse.model_validate(event, from_attributes=True) for event in events]
         )
 
     async def get_event_by_id(self, event_id: int):
@@ -67,20 +67,19 @@ class EventsService:
         Raises:
             ValueError: если событие не было найдено
         """
-        
-        event_to_return = None
-        
-        for event in self.in_memory_data_base["events"]:
-            if event["id"] == event_id:
-                event_to_return = event
-                break
 
-        if not event_to_return:
-            raise ValueError(f'event with id {event_id} not found')
+        result = await self.session.execute(
+            select(EventModel).where(EventModel.id == event_id)
+        )
 
-        return schemas_events.EventResponse(**event)
-    
-    async def update_event(self, event_id: int, event_data: schemas_events.EventCreate):
+        event = result.scalar_one_or_none()
+
+        if not event:
+            raise ValueError(f'Event with id {event_id} not found')
+        
+        return schemas_events.EventResponse.model_validate(event, from_attributes=True)
+
+    async def update_event(self, event_id: int, event: schemas_events.EventCreate):
         """
         Обновить событие по его id
 
@@ -94,19 +93,23 @@ class EventsService:
         Raises:
             ValueError: если событие не было найдено
         """
+        
+        result = await self.session.execute(
+            select(EventModel).where(EventModel.id == event_id)
+        )
 
-        event_to_update = None
+        db_event = result.scalar_one_or_none()
 
-        for event in self.in_memory_data_base["events"]:
-            if event["id"] == event_id:
-                event_to_update = event
-                break
+        if not db_event:
+            raise ValueError(f'Event with id {event_id} not found')
 
-        if not event_to_update:
-            raise ValueError(f'event with id {event_id} not found')
+        for key, value in event.model_dump().items():
+            setattr(db_event, key, value)
 
-        event_to_update.update(event_data.model_dump())
-        return schemas_events.EventResponse(**event_to_update)
+        await self.session.commit()
+        await self.session.refresh(db_event)
+
+        return schemas_events.EventResponse.model_validate(db_event, from_attributes=True)
 
     async def delete_event(self, event_id: int):
         """
@@ -122,15 +125,16 @@ class EventsService:
             ValueError: если событие не было найдено
         """
 
-        event_to_delete = None
+        result = await self.session.execute(
+            select(EventModel).where(EventModel.id == event_id)
+        )
 
-        for event in self.in_memory_data_base["events"]:
-            if event["id"] == event_id:
-                event_to_delete = event
-                break
+        event = result.scalar_one_or_none()
 
-        if not event_to_delete:
-            raise ValueError(f'event with id {event_id} not found')
-        
-        self.in_memory_data_base["events"].remove(event)
-        return schemas_events.EventResponse(**event_to_delete)
+        if not event:
+            raise ValueError(f'Event with id {event_id} not found')
+
+        await self.session.delete(event)
+        await self.session.commit()
+
+        return schemas_events.EventResponse.model_validate(event, from_attributes=True)
