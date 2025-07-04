@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS event (
     description TEXT,
     photo VARCHAR(255),
     location VARCHAR(255),
-    starts_at TIMESTAMP NOT NULL,
-    ends_at TIMESTAMP NOT NULL,
+    date VARCHAR(255) NOT NULL,
+    -- ends_at TIMESTAMP NOT NULL,
     max_participants INTEGER,
     color VARCHAR(16),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
