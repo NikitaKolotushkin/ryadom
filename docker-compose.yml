@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   edge-router:
+    container_name: edge-router
     build: 
       context: ./ryadom_edge-router
       secrets:
@@ -14,6 +15,7 @@ services:
       - app.env
 
   events:
+    container_name: events
     build:
       context: ./ryadom_events
       secrets:
@@ -24,6 +26,26 @@ services:
       - "8083:8083"
     env_file:
       - app.env
+
+  postgres-events:
+    image: postgres:16
+    container_name: postgres-events
+    networks:
+      - ryadom-network
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: events_user
+      POSTGRES_PASSWORD: events_password
+      POSTGRES_DB: events_db
+    volumes:
+      - postgres_events_data:/var/lib/postgresql/data
+      - ./init-events-db.sql:/docker-entrypoint-initdb.d/init-events-db.sql
+    restart: unless-stopped
+
+volumes:
+  postgres_events_data:
+  # postgres_users_data:
 
 networks:
   ryadom-network:
