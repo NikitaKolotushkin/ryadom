@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS event (
     -- ends_at TIMESTAMP NOT NULL,
     max_participants INTEGER,
     color VARCHAR(16),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at VARCHAR(64)
 );
 
 -- MEMBERS
