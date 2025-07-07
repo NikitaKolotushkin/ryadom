@@ -3,6 +3,7 @@ import httpx
 import typing
 
 import ryadom_schemas.events as schemas_events
+import ryadom_schemas.users as schemas_users
 from fastapi import HTTPException
 
 
@@ -31,6 +32,22 @@ class RouterService:
             if response.status_code == 404:
                 raise HTTPException(status_code=404, detail="User not found")
             
+            response.raise_for_status()
+
+            return response.json()
+        
+    async def update_user_from_user_service(self, user_id: int, user_data: schemas_users.UserCreate):
+        async with httpx.AsyncClient() as client:
+            response = await client.put(f'{self.users_service_url}/users/{user_id}', json=user_data.model_dump())
+            
+            response.raise_for_status()
+            
+            return response.json()
+
+    async def delete_user_from_user_service(self, user_id: int):
+        async with httpx.AsyncClient() as client:
+            response = await client.delete(f'{self.users_service_url}/users/{user_id}')
+
             response.raise_for_status()
 
             return response.json()

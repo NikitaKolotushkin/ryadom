@@ -16,7 +16,7 @@ router_service = RouterService()
 # USERS
 
 @router.post('/users/', response_model=schemas_users.UserResponse)
-async def post_event(request: Request, user: schemas_users.UserCreate):
+async def post_user(request: Request, user: schemas_users.UserCreate):
     try:
         user_data = await router_service.post_user_to_user_service(user)
         return user_data
@@ -39,6 +39,24 @@ async def get_users(request: Request):
 async def get_user(request: Request, user_id: int):
     try:
         user_data = await router_service.get_user_from_user_service(user_id)
+        return user_data
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.put('/users/{user_id}')
+async def update_user(request: Request, user_id: int, user_data: schemas_users.UserCreate):
+    try:
+        user_data_ = await router_service.update_user_from_user_service(user_id, user_data)
+        return user_data_
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.delete('/users/{user_id}')
+async def delete_user(request: Request, user_id: int):
+    try:
+        user_data = await router_service.delete_user_from_user_service(user_id)
         return user_data
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
