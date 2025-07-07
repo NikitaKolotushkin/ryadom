@@ -26,9 +26,12 @@ services:
       - "8083:8083"
     env_file:
       - app.env
+    depends_on:
+      postgres-events:
+        condition: service_healthy
 
   postgres-events:
-    image: postgres:16
+    image: postgres:latest
     container_name: postgres-events
     networks:
       - ryadom-network
@@ -40,12 +43,55 @@ services:
       POSTGRES_DB: events_db
     volumes:
       - postgres_events_data:/var/lib/postgresql/data
-      - ./init-events-db.sql:/docker-entrypoint-initdb.d/init-events-db.sql
+      - ./ryadom_events/db/init-events-db.sql:/docker-entrypoint-initdb.d/init-events-db.sql
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "events_user"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  users:
+    container_name: users
+    build:
+      context: ./ryadom_users
+      secrets:
+        - github_token
+    networks:
+      - ryadom-network
+    ports:
+      - "8082:8082"
+    env_file:
+      - app.env
+    depends_on:
+      postgres-users:
+        condition: service_healthy
+
+  postgres-users:
+    image: postgres:latest
+    container_name: postgres-users
+    networks:
+      - ryadom-network
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: users_user
+      POSTGRES_PASSWORD: users_password
+      POSTGRES_DB: users_db
+    volumes:
+      - postgres_users_data:/var/lib/postgresql/data
+      - ./ryadom_users/db/init-users-db.sql:/docker-entrypoint-initdb.d/init-users-db.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "users_user"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_events_data:
-  # postgres_users_data:
+  postgres_users_data:
 
 networks:
   ryadom-network:
