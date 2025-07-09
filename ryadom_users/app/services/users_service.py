@@ -10,6 +10,7 @@ from app.models.user import UserModel
 
 from datetime import datetime
 from fastapi import HTTPException
+from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +19,13 @@ class UsersService:
 
     def __init__(self, session: AsyncSession):
         self.session = session
+        self._pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+
+    def get_password_hash(self, password: str) -> str:
+        return self._pwd_context.hash(password)
+    
+    def verify_password(self, password: str, hash: str) -> bool:
+        return self._pwd_context.verify(password, hash)
 
     async def create_user(self, user: schemas_users.UserCreate):
         """
@@ -30,7 +38,19 @@ class UsersService:
             UserResponse: созданный пользователь
         """
 
-        new_user = UserModel(**user.model_dump(), created_at=datetime.now().isoformat())
+        hashed_password = self.get_password_hash(user.password)
+
+        # new_user = UserModel(**user.model_dump(exclude={'password'}), password_hash=hashed_password, created_at=datetime.now().isoformat())
+        # new_user = UserModel(**user.model_dump(), created_at=datetime.now().isoformat())
+
+        user_data = user.model_dump(exclude={'password'})
+
+        new_user = UserModel(
+            **user_data, 
+            password_hash=hashed_password,
+            created_at=datetime.now().isoformat()
+        )
+        
         self.session.add(new_user)
 
         await self.session.commit()
