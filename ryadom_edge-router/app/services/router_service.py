@@ -18,7 +18,7 @@ class RouterService:
 
     async def post_user_to_user_service(self, user_data: schemas_users.UserCreate):
         async with httpx.AsyncClient() as client:
-            response = await client.post(f'{self.events_service_url}/events/', json=user_data.model_dump())
+            response = await client.post(f'{self.users_service_url}/users/', json=user_data.model_dump())
 
             response.raise_for_status()
 
