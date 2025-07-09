@@ -51,7 +51,6 @@ services:
       timeout: 5s
       retries: 5
 
-
   users:
     container_name: users
     build:
@@ -88,6 +87,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  
+  front-end:
+    container_name: front-end
+    build:
+      context: ./ryadom_front-end
+    networks:
+      - ryadom-network
+    ports:
+      - "8081:8081"
+    env_file:
+      - app.env
+
 
 volumes:
   postgres_events_data:
