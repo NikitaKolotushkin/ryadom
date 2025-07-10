@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Front-end microservice test</title>
-    <link rel="stylesheet" href="/static/css/main.css">
-</head>
-<body style="text-align: center;">
-    <h1>Front-end microservice test</h1>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+    <h1>Добро пожаловать!</h1>
+    <p>Это главная страница.</p>
+{% endblock %}
