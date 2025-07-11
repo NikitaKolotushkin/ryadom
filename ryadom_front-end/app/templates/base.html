@@ -11,12 +11,15 @@
 
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/light.css">
+    <link rel="stylesheet" href="/static/css/media_queries.css">
 </head>
 <body>
-    {% include "nav.html" %}
-
-    {% block content %}
-
-    {% endblock %}
+    <div class="container">
+        {% include "nav.html" %}
+    
+        {% block content %}
+    
+        {% endblock %}
+    </div>
 </body>
 </html>
