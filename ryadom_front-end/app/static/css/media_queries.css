@@ -1,0 +1,11 @@
+@media (max-width: 768px) {
+    .event {
+        flex: 0 0 calc((100% - 1 * 5vh) / 2); /* 2 элемента в строке */
+    }
+}
+
+@media (max-width: 480px) {
+    .event {
+        flex: 0 0 100%; /* 1 элемент в строке */
+    }
+}
