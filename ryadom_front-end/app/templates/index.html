@@ -3,6 +3,42 @@
 {% block title %}Главная страница{% endblock %}
 
 {% block content %}
-    <h1>Добро пожаловать!</h1>
-    <p>Это главная страница.</p>
+    <div class="slider">
+        <div class="slider__element" style="background-image: url(/static/src/img/banner.png);">
+            <div class="slider__element-text">
+                <h4>Унивидение - Финал</h4>
+                <p>27 апреля 2025</p>
+                <p>Михайловская дача</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="affiche">
+        <h3>Афиша событий</h3>
+        <ul>
+            {% for day in range(1, 22) %}
+                <li>
+                    <a href="/" style="text-align: center;">
+                        <div class="affiche__day">
+                            <p>{{ day }}</p>
+                            <p>пн</p>
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="events">
+
+        {%  for event in range(9) %}
+
+        <a href="/" class="event">
+            <img src="/static/src/img/event.png" alt="Мероприятие" class="event__photo">
+            <p class="event__name">Пляски у костра</p>
+            <p class="event__date">28 мая – 16:00</p>
+        </a>
+
+        {% endfor %}
+    </div>
 {% endblock %}
