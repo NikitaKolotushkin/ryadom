@@ -29,6 +29,7 @@ body {
 
 nav {
     width: 100%;
+    margin-top: var(--base-vertical-margin);
     margin-bottom: var(--base-vertical-margin);
 }
 
