@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from app.services.front_end_service import router
+from app.routes.routes import router
 
 
 app = FastAPI()
