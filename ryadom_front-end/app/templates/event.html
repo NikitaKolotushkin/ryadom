@@ -1,5 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {{ event_id }}
+
+    {% include "logo.html" %}
+
+    <header class="event__header" style="background-image: url(/static/src/img/banner.png);">
+        <div class="container">
+            <div class="event__header-inner">
+                <div class="event__tags">
+                    <p>Культура</p>
+                    <p>Концерт</p>
+                    <p>Онлайн</p>
+                </div>
+                <h3 class="event__header-title">Унивидение 2025 – Финал</h3>
+                <p class="event__header-date">27 апреля 2025</p>
+                <p class="event__header-place">Здание 12 коллегий</p>
+                <div class="event__header-buttons">
+                    <a href="#">Участвовать</a>
+                    <a href="#">♡</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="event__description">
+            <h3>Описание</h3>
+            <p>
+                Жизнь человека — противостояние контрастов. Она наполнена испытаниями, неожиданностями, резкими поворотами, взлётами и падениями. Так и в творчестве: нельзя достичь успеха, не испытав поражения.<br/>На пути к победе мы не раз сталкиваемся с неудачами, но разве не они делают её такой заветной и сладкой?<br/>В этом году Унивидение исполнит симфонию успеха, которая расскажет истории десятков талантливых артистов и зажжёт ваши сердца!
+            </p>
+        </div>
+        <div class="event__program">
+            <h3>Программа</h3>
+        </div>
+        <div class="event__address">
+            <h3>Адрес</h3>
+            <p>Онлайн</p>
+        </div>
+        <div class="event__organizers">
+            <h3>Организаторы</h3>
+            <ul class="people_list">
+                {% for _ in range(3) %}
+                <li>
+                    <a href="">
+                        <img src="/static/src/img/people.png" alt="">
+                        <p>Человек_name</p>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="event__partners">
+            <h3>Партнеры</h3>
+            <ul class="people_list">
+                {% for _ in range(3) %}
+                <li>
+                    <a href="">
+                        <img src="/static/src/img/people.png" alt="">
+                        <p>Человек_name</p>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endblock %}
