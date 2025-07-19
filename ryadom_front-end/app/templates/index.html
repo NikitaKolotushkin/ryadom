@@ -1,42 +1,48 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="slider">
-        <div class="slider__element" style="background-image: url(/static/src/img/banner.png);">
-            <div class="slider__element-text">
-                <h4>Унивидение - Финал</h4>
-                <p>27 апреля 2025</p>
-                <p>Михайловская дача</p>
+
+    {% include "logo.html" %}
+    {% include "nav.html" %}
+
+    <div class="container">
+        <div class="slider">
+            <div class="slider__element" style="background-image: url(/static/src/img/banner.png);">
+                <div class="slider__element-text">
+                    <h4>Унивидение - Финал</h4>
+                    <p>27 апреля 2025</p>
+                    <p>Михайловская дача</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="affiche">
-        <h3>Афиша событий</h3>
-        <ul>
-            {% for day in date_list %}
-                <li>
-                    <a href="/" style="text-align: center;">
-                        <div class="affiche__day">
-                            <p>{{ day[0] }}</p>
-                            <p>{{ day[1] }}</p>
-                        </div>
-                    </a>
-                </li>
+        <div class="affiche">
+            <h3>Афиша событий</h3>
+            <ul>
+                {% for day in date_list %}
+                    <li>
+                        <a href="/" style="text-align: center;">
+                            <div class="affiche__day {% if day[1] == 'сб' or day[1] == 'вс' %}weekend{% endif %}">
+                                <p>{{ day[0] }}</p>
+                                <p>{{ day[1] }}</p>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="events">
+
+            {%  for event in range(9) %}
+
+            <a href="/event/{{event}}" target="_blank" class="event">
+                <img src="/static/src/img/event.png" alt="Мероприятие" class="event__photo">
+                <p class="event__card-name">Пляски у костра</p>
+                <p class="event__card-date">28 мая – 16:00</p>
+            </a>
+
             {% endfor %}
-        </ul>
-    </div>
-
-    <div class="events">
-
-        {%  for event in range(9) %}
-
-        <a href="/event/{{event}}" target="_blank" class="event">
-            <img src="/static/src/img/event.png" alt="Мероприятие" class="event__photo">
-            <p class="event__name">Пляски у костра</p>
-            <p class="event__date">28 мая – 16:00</p>
-        </a>
-
-        {% endfor %}
+        </div>
     </div>
 {% endblock %}
