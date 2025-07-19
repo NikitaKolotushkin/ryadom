@@ -80,3 +80,15 @@ class FrontEndService:
             template_name='event.html', 
             context={'event_id': event_id}
         )
+    
+    def get_login_page(self, request: Request):
+        return self.render_template(
+            request=request, 
+            template_name='login.html'
+        )
+    
+    def get_register_page(self, request: Request):
+        return self.render_template(
+            request=request, 
+            template_name='register.html'
+        )
