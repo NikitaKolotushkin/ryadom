@@ -23,6 +23,30 @@ h3 {
     margin-bottom: var(--base-vertical-margin);
 }
 
+form {    
+    text-align: center;
+}
+
+form > * {
+    width: 100%;
+
+    margin-bottom: 2vh;
+    padding: 1vh 2vh;
+}
+
+form > h3 {
+    font-size: 4.5vh;
+    color: var(--accent-color);
+}
+
+form > a {
+    text-decoration: none;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
 .container {
     width: 68.75vw;
     margin: 0 auto;
@@ -186,7 +210,7 @@ nav {
     display: flex;
     flex-wrap: wrap;
     gap: 5vh;
-    justify-content: center; /* Центрируем элементы */
+    justify-content: center;
 }
 
 .event {
@@ -318,6 +342,19 @@ nav {
 
 }
 
+.event__header-buttons a:last-child {
+    display: flex;
+    
+    padding: 1vh;
+
+    align-items: center;
+}
+
+.event__header-buttons a img {
+    width: 2.5vh;
+    height: 2vh;
+}
+
 .event__description, 
 .event__program,
 .event__organizers,
@@ -356,4 +393,52 @@ nav {
     
     text-decoration: none;
     color: var(--main-font-color);
+}
+
+.form__wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 60vh;
+    max-width: 100%;
+
+    padding: var(--base-vertical-margin);
+
+    background: #F1F1F1;
+    border-radius: 4vh;
+}
+
+form input {
+
+    font-size: 2.2vh;
+    font-weight: 400;
+
+    border: none;
+    outline: none;
+
+    border-radius: 4vh;
+}
+
+form input::placeholder {
+    font-size: 2.2vh;
+    font-weight: 400;
+    color: rgba(0, 0, 0, .55)
+}
+
+form button {
+    background-color: var(--accent-color);
+    color: var(--main-bg-color);
+    font-size: 2.2vh;
+    font-weight: 400;
+
+    border: none;
+    outline: none;
+
+    border-radius: 4vh;
+}
+
+form > a {
+    color: var(--accent-color);
 }
