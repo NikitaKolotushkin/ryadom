@@ -131,6 +131,8 @@ nav {
 }
 
 .slider__element {
+    position: relative;
+
     width: 100%;
     height: 100%;
 
@@ -148,6 +150,30 @@ nav {
     background-repeat: no-repeat;
     
     color: var(--main-bg-color);    
+}
+
+.slider__element::before {
+    content: "";
+    
+    position: absolute;
+    
+    top: 0;
+    left: 0;
+    
+    width: 100%;
+    height: 100%;
+    
+    background: rgba(0, 0, 0, .3);
+
+    border-radius: 3vh;
+    
+    z-index: 1;
+}
+
+.slider__element > * {
+    position: relative;
+    
+    z-index: 2;
 }
 
 .slider__element h4 {
@@ -364,6 +390,11 @@ nav {
     margin-bottom: var(--base-vertical-margin);
 }
 
+.event__address-map {
+    width: 100%;
+    height: 35vh;
+}
+
 .people_list {
     width: 100%;
 
@@ -402,7 +433,7 @@ nav {
     transform: translate(-50%, -50%);
 
     width: 60vh;
-    max-width: 100%;
+    max-width: 90%;
 
     padding: var(--base-vertical-margin);
 
