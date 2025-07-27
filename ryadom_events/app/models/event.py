@@ -9,11 +9,11 @@ class EventModel(Base):
     __tablename__ = 'event'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(255), nullable=False)
+    name = Column(Text, nullable=False)
     description = Column(Text)
-    photo = Column(String(255))
-    location = Column(String(255))
-    date = Column(String(63), nullable=False)
+    photo = Column(Text)
+    location = Column(Text)
+    date = Column(Text, nullable=False)
     max_participants = Column(Integer)
-    color = Column(String(7))
-    created_at = Column(String(63), nullable=False)
+    color = Column(Text)
+    created_at = Column(Text, nullable=False)
