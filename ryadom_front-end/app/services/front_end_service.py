@@ -70,6 +70,7 @@ class FrontEndService:
         date_list = self._generate_date_list()
 
         context = {
+            'title': 'Ryadom | Главная',
             'date_list': date_list,
         }
 
@@ -92,15 +93,27 @@ class FrontEndService:
         )
     
     def get_login_page(self, request: Request):
+        
+        context = {
+            'title': 'Ryadom | Вход'
+        }
+
         return self.render_template(
             request=request, 
-            template_name='login.html'
+            template_name='login.html',
+            context=context
         )
     
     def get_register_page(self, request: Request):
+        
+        context = {
+            'title': 'Ryadom | Регистрация'
+        }
+        
         return self.render_template(
             request=request, 
-            template_name='register.html'
+            template_name='register.html',
+            context=context
         )
     
     def _generate_date_list(self) -> List[dict]:
