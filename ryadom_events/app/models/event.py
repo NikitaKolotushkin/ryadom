@@ -10,6 +10,8 @@ class EventModel(Base):
 
     id = Column(Integer, primary_key=True)
     url = Column(Text, nullable=False)
+    category = Column(Text)
+    format = Column(Text, nullable=False, default='online')
     name = Column(Text, nullable=False)
     description = Column(Text)
     photo = Column(Text)
