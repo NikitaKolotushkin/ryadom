@@ -1,14 +1,49 @@
 <div class="container">
-    <nav>
-        <div class="nav__menu">
-            <ul>
-                <li><a href="/">Наука</a></li>
-                <li><a href="/">Образование</a></li>
-                <li><a href="/">Волонтерство</a></li>
-                <li><a href="/">Бизнес</a></li>
-                <li><a href="/">Карьера</a></li>
-                <li><a href="/">Культура</a></li>
-                <li><a href="/">Спорт</a></li>
+    <nav class="category-nav">
+        <div class="category-nav__scroll-container">
+            <ul class="category-nav__list">
+                <li class="category-nav__item">
+                    <a href="{{ context.update_query_params(category='science') }}" 
+                       class="category-nav__link {% if active_category == 'science' %}active{% endif %}">
+                        Наука
+                    </a>
+                </li>
+                <li class="category-nav__item">
+                    <a href="{{ context.update_query_params(category='education') }}" 
+                       class="category-nav__link {% if active_category == 'education' %}active{% endif %}">
+                        Образование
+                    </a>
+                </li>
+                <li class="category-nav__item">
+                    <a href="{{ context.update_query_params(category='volunteering') }}" 
+                       class="category-nav__link {% if active_category == 'volunteering' %}active{% endif %}">
+                        Волонтерство
+                    </a>
+                </li>
+                <li class="category-nav__item">
+                    <a href="{{ context.update_query_params(category='business') }}" 
+                       class="category-nav__link {% if active_category == 'business' %}active{% endif %}">
+                        Бизнес
+                    </a>
+                </li>
+                <li class="category-nav__item">
+                    <a href="{{ context.update_query_params(category='career') }}" 
+                       class="category-nav__link {% if active_category == 'career' %}active{% endif %}">
+                        Карьера
+                    </a>
+                </li>
+                <li class="category-nav__item">
+                    <a href="{{ context.update_query_params(category='culture') }}" 
+                       class="category-nav__link {% if active_category == 'culture' %}active{% endif %}">
+                        Культура
+                    </a>
+                </li>
+                <li class="category-nav__item">
+                    <a href="{{ context.update_query_params(category='sport') }}" 
+                       class="category-nav__link {% if active_category == 'sport' %}active{% endif %}">
+                        Спорт
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
