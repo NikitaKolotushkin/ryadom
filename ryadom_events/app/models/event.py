@@ -12,6 +12,7 @@ class EventModel(Base):
     name = Column(Text, nullable=False)
     description = Column(Text)
     photo = Column(Text)
+    banner = Column(Text)
     location = Column(Text)
     date = Column(Text, nullable=False)
     max_participants = Column(Integer)
