@@ -18,18 +18,20 @@
 
         <div class="affiche">
             <h3>Афиша событий</h3>
-            <ul>
-                {% for day in date_list %}
-                    <li>
-                        <a href="/" style="text-align: center;">
-                            <div class="affiche__day {% if day[1] == 'сб' or day[1] == 'вс' %}weekend{% endif %}">
-                                <p>{{ day[0] }}</p>
-                                <p>{{ day[1] }}</p>
-                            </div>
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
+            <div class="affiche__scroll-container">
+                <ul class="affiche__list">
+                    {% for day in date_list %}
+                        <li class="affiche__item">
+                            <a href="{{ context.update_query_params(date='2025-04-27') }}" style="text-align: center;">
+                                <div class="affiche__day {% if day[1] == 'сб' or day[1] == 'вс' %}weekend{% endif %}">
+                                    <p>{{ day[0] }}</p>
+                                    <p>{{ day[1] }}</p>
+                                </div>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
 
         <div class="events">
