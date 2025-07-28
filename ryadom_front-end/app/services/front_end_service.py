@@ -82,8 +82,14 @@ class FrontEndService:
     
     def get_event_page(self, request: Request, event_id: int):
 
+        event_data = {
+            'id': event_id,
+            'name': 'Мероприятие',
+        }
+
         context = {
-            'event_id': event_id
+            'title': f'Ryadom | {event_data['name']}',
+            'event_data': event_data
         }
 
         return self.render_template(
