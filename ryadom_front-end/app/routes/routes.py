@@ -4,7 +4,7 @@
 import typing
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 
 from app.services.front_end_service import FrontEndService
 
@@ -14,6 +14,11 @@ router = APIRouter(tags=['frontend'])
 
 async def get_front_end_service():
     return FrontEndService()
+
+
+@router.get('/favicon.ico', include_in_schema=False)
+async def favicon(request: Request, service: FrontEndService = Depends(get_front_end_service)):
+    return FileResponse('app/static/favicon.svg')
 
 
 @router.get('/', response_class=HTMLResponse)
