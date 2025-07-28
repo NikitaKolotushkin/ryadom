@@ -3,7 +3,7 @@
 
 import typing
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from fastapi.responses import FileResponse, HTMLResponse
 
 from app.services.front_end_service import FrontEndService
@@ -22,7 +22,12 @@ async def favicon(request: Request, service: FrontEndService = Depends(get_front
 
 
 @router.get('/', response_class=HTMLResponse)
-async def root(request: Request, service: FrontEndService = Depends(get_front_end_service)):
+async def home(
+    request: Request,
+    category: str | None = Query(None, description='Категория событий'),
+    date: str | None = Query(None, description='Дата событий в формате YYYY-MM-DD'),
+    service: FrontEndService = Depends(get_front_end_service)
+):
     try:
         return service.get_index_page(request)
     except Exception as e:
