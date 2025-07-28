@@ -1,8 +1,16 @@
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
+    .affiche__item {
+        margin-right: var(--base-vertical-margin);
+    }    
+}
+
+@media (max-width: 1024px) {
     .container {
         width: 85vw;
     }
-    
+}
+
+@media (max-width: 768px) {
     .event {
         flex: 0 0 calc((100% - 1 * 5vh) / 2); /* 2 элемента в строке */
     }
