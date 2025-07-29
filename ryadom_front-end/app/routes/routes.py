@@ -29,7 +29,7 @@ async def home(
     service: FrontEndService = Depends(get_front_end_service)
 ):
     try:
-        return service.get_index_page(request)
+        return service.get_index_page(request, category=category, date=date)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
