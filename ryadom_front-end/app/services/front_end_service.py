@@ -54,15 +54,78 @@ class FrontEndService:
             context=context
         )
     
-    async def get_event_data(self, event_id: int):
-        async with httpx.AsyncClient() as client:
-            response = await client.get(f'{self.edge_router_service_url}/api/events/{event_id}')
-            
-            if response.status_code == 404:
-                raise HTTPException(status_code=404, detail="Event not found")
-            response.raise_for_status()
-            
-            return response.json() 
+    async def get_event_data(self, event_id: int) -> dict:
+        """
+        Получение данных о событии
+        
+        Args:
+            event_id: id события
+        
+        Returns:
+            dict: данные о событии
+        
+        Raises:
+            HTTPException: если событие не было найдено
+        """
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(f'{self.edge_router_service_url}/api/events/{event_id}')
+                
+                if response.status_code == 404:
+                    raise HTTPException(status_code=404, detail="Event not found")
+                
+                response.raise_for_status()
+                
+                return response.json()
+
+        except httpx.TimeoutException:
+            raise HTTPException(
+                status_code=504, 
+                detail="Service unavailable, request timed out"
+            )
+
+        except httpx.RequestError as e:
+            raise HTTPException(
+                status_code=503, 
+                detail="Service unavailable, request error"
+            )
+
+    async def get_all_events(self) -> List[dict]:
+        """
+        Получить все события
+        
+        Returns:
+            List[dict]: список событий
+        """
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(f'{self.edge_router_service_url}/api/events/')
+                
+                if response.status_code == 404:
+                    return []
+
+                response.raise_for_status()
+
+                data = response.json()
+
+                if 'events' not in data:
+                    raise HTTPException(
+                        status_code=500, detail="Invalid response format from events service"
+                    )
+
+                return data['events']
+
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(
+                status_code=e.response.status_code, 
+                detail=str(e)
+            )
+
+        except Exception as e:
+            raise HTTPException(
+                status_code=500, 
+                detail='Internal server error'
+            )
 
     async def get_index_page(self, request: Request, category: Optional[str] = None, date: Optional[str] = None):
         """
@@ -176,16 +239,12 @@ class FrontEndService:
             List[dict]: список событий
         """
 
-        one_event = await self.get_event_data(1)
-
-        all_events = [
-            one_event
-        ]
+        all_events = await self.get_all_events()
 
         filtered_events = all_events
 
-        # if category and category in [category_['id'] for category_ in self._get_allowed_categories()]:
-        #     filtered_events = [event for event in filtered_events if event['category'] == category]
+        if category and category in [category_['id'] for category_ in self._get_allowed_categories()]:
+            filtered_events = [event for event in filtered_events if event['category'] == category]
         
         # if date:
         #     filtered_events = [event for event in filtered_events if event['date'] == date]
