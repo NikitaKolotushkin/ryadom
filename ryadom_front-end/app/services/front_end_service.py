@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import os
+import httpx
 
 from datetime import datetime, timedelta
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from typing import *
@@ -18,9 +19,9 @@ router = APIRouter()
 class FrontEndService:
     
     def __init__(self):
-        self.templates = Jinja2Templates(directory='app/templates')
         self.edge_router_service_url = os.getenv("EDGE_ROUTER_SERVICE_URL")
-
+        
+        self.templates = Jinja2Templates(directory='app/templates')
         self.templates.env.globals["request_context"] = self.request_context
 
     def request_context(self, request: Request):
@@ -54,9 +55,16 @@ class FrontEndService:
         )
     
     async def get_event_data(self, event_id: int):
-        pass
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f'{self.edge_router_service_url}/api/events/{event_id}')
+            
+            if response.status_code == 404:
+                raise HTTPException(status_code=404, detail="Event not found")
+            response.raise_for_status()
+            
+            return response.json() 
 
-    def get_index_page(self, request: Request, category: Optional[str] = None, date: Optional[str] = None):
+    async def get_index_page(self, request: Request, category: Optional[str] = None, date: Optional[str] = None):
         """
         Получение главной страницы с поддержкой фильтрации
 
@@ -73,7 +81,7 @@ class FrontEndService:
 
         date_list = self._generate_date_list(selected_date)
 
-        events = self._get_filtered_events(category, selected_date)
+        events = await self._get_filtered_events(category, selected_date)
 
         active_category = category if category in self._get_allowed_categories() else None
 
@@ -151,7 +159,7 @@ class FrontEndService:
             {"id": "sport", "name": "Спорт"}
         ]
 
-    def _get_filtered_events(
+    async def _get_filtered_events(
             self, 
             category: Optional[str], 
             date: Optional[datetime.date]
@@ -168,30 +176,19 @@ class FrontEndService:
             List[dict]: список событий
         """
 
+        one_event = await self.get_event_data(1)
+
         all_events = [
-            {
-                "id": 1,
-                "name": "Конференция по ИИ",
-                "category": "science",
-                "date": datetime(2025, 7, 30).date(),
-                "description": "Крупнейшая конференция по искусственному интеллекту"
-            },
-            {
-                "id": 2,
-                "name": "Футбольный матч",
-                "category": "sport",
-                "date": datetime(2025, 7, 30).date(),
-                "description": "Матч чемпионата города"
-            },
+            one_event
         ]
 
         filtered_events = all_events
 
-        if category and category in [category_['id'] for category_ in self._get_allowed_categories()]:
-            filtered_events = [event for event in filtered_events if event['category'] == category]
+        # if category and category in [category_['id'] for category_ in self._get_allowed_categories()]:
+        #     filtered_events = [event for event in filtered_events if event['category'] == category]
         
-        if date:
-            filtered_events = [event for event in filtered_events if event['date'] == date]
+        # if date:
+        #     filtered_events = [event for event in filtered_events if event['date'] == date]
         
         return filtered_events
     
