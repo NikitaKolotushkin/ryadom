@@ -22,10 +22,10 @@
                 <ul class="affiche__list">
                     {% for day in date_list %}
                         <li class="affiche__item">
-                            <a href="{{ context.update_query_params(date='2025-04-27') }}" style="text-align: center;">
-                                <div class="affiche__day {% if day[1] == 'сб' or day[1] == 'вс' %}weekend{% endif %}">
-                                    <p>{{ day[0] }}</p>
-                                    <p>{{ day[1] }}</p>
+                            <a href="{{ context.update_query_params(date=day.iso_date) }}" style="text-align: center;">
+                                <div class="affiche__day {% if day.is_weekend %}weekend{% endif %}">
+                                    <p>{{ day.month_day }}</p>
+                                    <p>{{ day.week_day }}</p>
                                 </div>
                             </a>
                         </li>
@@ -35,16 +35,17 @@
         </div>
 
         <div class="events">
-
-            {%  for event in range(9) %}
-
-            <a href="/event/{{event}}" target="_blank" class="event">
-                <img src="/static/src/img/event.png" alt="Мероприятие" class="event__photo">
-                <p class="event__card-name">Пляски у костра</p>
-                <p class="event__card-date">28 мая – 16:00</p>
-            </a>
-
-            {% endfor %}
+            {% if events %}
+                {%  for event in events %}
+                <a href="/event/{{ event.id }}" target="_blank" class="event">
+                    <img src="/static/src/img/event.png" alt="Мероприятие" class="event__photo">
+                    <p class="event__card-name">{{ event.name }}</p>
+                    <p class="event__card-date">28 мая – 16:00</p>
+                </a>
+                {% endfor %}
+            {% else %}
+                <p>События по заданным параметрам не найдены... :(</p>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
