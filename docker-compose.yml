@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  edge-router:
+  edge_router:
     container_name: edge-router
     build: 
       context: ./ryadom_edge-router
@@ -27,10 +27,10 @@ services:
     env_file:
       - app.env
     depends_on:
-      postgres-events:
+      postgres_events:
         condition: service_healthy
 
-  postgres-events:
+  postgres_events:
     image: postgres:latest
     container_name: postgres-events
     networks:
@@ -64,10 +64,10 @@ services:
     env_file:
       - app.env
     depends_on:
-      postgres-users:
+      postgres_users:
         condition: service_healthy
 
-  postgres-users:
+  postgres_users:
     image: postgres:latest
     container_name: postgres-users
     networks:
@@ -88,7 +88,7 @@ services:
       timeout: 5s
       retries: 5
   
-  front-end:
+  front_end:
     container_name: front-end
     build:
       context: ./ryadom_front-end
@@ -108,7 +108,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - front-end
+      - front_end
 
 
 volumes:
