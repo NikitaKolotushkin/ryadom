@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS event (
     location TEXT,
     address TEXT,
     date TEXT NOT NULL,
+    start_time TEXT,
     max_participants INTEGER,
     color TEXT,
     created_at TEXT NOT NULL

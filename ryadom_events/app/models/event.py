@@ -19,6 +19,7 @@ class EventModel(Base):
     location = Column(Text)
     address = Column(Text)
     date = Column(Text, nullable=False)
+    start_time = Column(Text, nullable=False)
     max_participants = Column(Integer)
     color = Column(Text)
     created_at = Column(Text, nullable=False)
