@@ -55,17 +55,20 @@ class FrontEndService:
         )
     
     async def get_event_data(self, event_id: int) -> dict:
+        
         """
-        Получение данных о событии
+        Получить данные события по id
         
         Args:
             event_id: id события
         
         Returns:
-            dict: данные о событии
+            dict: данные события
         
         Raises:
-            HTTPException: если событие не было найдено
+            HTTPException: 404 - Event not found
+            HTTPException: 504 - Service unavailable, request timed out
+            HTTPException: 503 - Service unavailable, request error
         """
         try:
             async with httpx.AsyncClient() as client:
@@ -92,10 +95,15 @@ class FrontEndService:
 
     async def get_all_events(self) -> List[dict]:
         """
-        Получить все события
-        
+        Получение списка всех событий
+
         Returns:
-            List[dict]: список событий
+            List[dict]: список событий
+
+        Raises:
+            HTTPException: 404 - Events not found
+            HTTPException: 500 - Internal server error
+            HTTPException: 503 - Service unavailable, request error
         """
         try:
             async with httpx.AsyncClient() as client:
@@ -162,16 +170,15 @@ class FrontEndService:
             context=context
         )
     
-    def get_event_page(self, request: Request, event_id: int):
+    async def get_event_page(self, request: Request, event_id: int):
 
-        event_data = {
-            'id': event_id,
-            'name': 'Мероприятие',
-        }
+        event_data = await self.get_event_data(event_id)
+        category = self._get_allowed_categories()
 
         context = {
             'title': f'Ryadom | {event_data['name']}',
-            'event_data': event_data
+            'event_data': event_data,
+            'category': self._get_russian_category_name(event_data['category']),
         }
 
         return self.render_template(
@@ -221,6 +228,11 @@ class FrontEndService:
             {"id": "culture", "name": "Культура"},
             {"id": "sport", "name": "Спорт"}
         ]
+
+    def _get_russian_category_name(self, en_id: str):
+        category_map = {category["id"]: category["name"] for category in self._get_allowed_categories()}
+        
+        return category_map.get(en_id, None)
 
     async def _get_filtered_events(
             self, 
