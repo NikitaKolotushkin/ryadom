@@ -35,9 +35,9 @@ async def home(
     
 
 @router.get('/event/{event_id}', response_class=HTMLResponse)
-async def users(request: Request, event_id: int, service: FrontEndService = Depends(get_front_end_service)):
+async def events(request: Request, event_id: int, service: FrontEndService = Depends(get_front_end_service)):
     try:
-        return service.get_event_page(request, event_id)
+        return await service.get_event_page(request, event_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
