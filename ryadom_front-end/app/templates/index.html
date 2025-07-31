@@ -7,7 +7,7 @@
 
     <div class="container">
         <div class="slider">
-            <div class="slider__element" style="background-image: url(/static/src/img/banner.png);">
+            <div class="slider__element" style="background-image: url('/static/src/img/banner.png');">
                 <div class="slider__element-text">
                     <h4>Унивидение - Финал</h4>
                     <p>27 апреля 2025</p>
@@ -36,10 +36,10 @@
 
         <div class="events">
             {% if events %}
-                {%  for event in events %}
-                <a href="/event/{{ event.id }}" target="_blank" class="event">
-                    <img src="/static/src/img/event.png" alt="Мероприятие" class="event__photo">
-                    <p class="event__card-name">{{ event.name }}</p>
+                {%  for event_data in events %}
+                <a href="/event/{{ event_data.id }}" target="_blank" class="event">
+                    <img src="{{ event_data.photo if event_data.photo else '/static/src/img/event.png' }}" alt="Мероприятие" class="event__photo">
+                    <p class="event__card-name">{{ event_data.name }}</p>
                     <p class="event__card-date">28 мая – 16:00</p>
                 </a>
                 {% endfor %}
