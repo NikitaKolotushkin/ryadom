@@ -12,7 +12,7 @@
                     <p>{{ 'Оффлайн' if event_data.format == 'offline' else 'Онлайн' }}</p>
                 </div>
                 <h3 class="event__header-title">{{ event_data.name }}</h3>
-                <p class="event__header-date">27 апреля 2025</p>
+                <p class="event__header-date">{{ human_date }}</p>
                 <p class="event__header-place">{{ event_data.location }}</p>
                 <div class="event__header-buttons">
                     <a href="#">Участвовать</a>
@@ -52,7 +52,7 @@
                 {% endfor %}
             </ul>
         </div>
-        <div class="event__partners">
+        <div class="event__partners" style="display: none;">
             <h3>Партнеры</h3>
             <ul class="people_list">
                 {% for _ in range(3) %}
