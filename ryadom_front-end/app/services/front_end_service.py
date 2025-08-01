@@ -167,7 +167,7 @@ class FrontEndService:
             'events': events,
             'active_category': active_category,
             'allowed_categories': self._get_allowed_categories(),
-            'slides': events.get('upcoming')[:3]
+            'slides': self._sort_events(await self.get_all_events())['upcoming'][:3]
         }
 
         return self.render_template(
@@ -179,16 +179,20 @@ class FrontEndService:
     async def get_event_page(self, request: Request, event_id: int):
 
         event_data = await self.get_event_data(event_id)
-        category = self._get_allowed_categories()
 
         is_past = date.fromisoformat(event_data['date']) < date.today()
+
+        organizers_ids = await self._get_event_organizers(event_data['id'])
+
+        organizers = [await self._get_user_data(organizer['user_id']) for organizer in organizers_ids]
 
         context = {
             'title': f'Ryadom | {event_data['name']}',
             'event_data': event_data,
             'category': self._get_russian_category_name(event_data['category']),
             'human_date': self._get_human_date(event_data['date']),
-            'is_past': is_past
+            'is_past': is_past,
+            'organizers': organizers
         }
 
         return self.render_template(
@@ -349,3 +353,82 @@ class FrontEndService:
             'upcoming': upcoming,
             'past': past
         }
+    
+    async def _get_event_members(self, event_id: int) -> List[Dict[str, Any]]:
+        """
+        Получить всех участников события через API бэкенда
+        
+        Args:
+            event_id: ID события
+            
+        Returns:
+            List[Dict]: Список участников события
+            
+        Raises:
+            HTTPException: При ошибках запроса к сервису
+        """
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                response = await client.get(
+                    f'{self.edge_router_service_url}/api/events/{event_id}/members/',
+                    headers={"Accept": "application/json"}
+                )
+                
+                response.raise_for_status()
+                
+                data = response.json()
+                return data.get("members", [])
+                
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                return []
+
+    async def _get_event_organizers(self, event_id) -> List[Dict[str, Any]]:
+        """
+        Получить только организаторов события
+        
+        Args:
+            event_id: ID события
+            
+        Returns:
+            List[Dict]: Список организаторов события
+            
+        Raises:
+            HTTPException: При ошибках запроса к сервису
+        """
+        all_members = await self._get_event_members(event_id)
+        
+        organizers = [
+            member for member in all_members 
+            if member.get("role", "").lower() == "organizer"
+        ]
+        
+        return organizers
+    
+    async def _get_user_data(self, user_id):
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(f'{self.edge_router_service_url}/api/users/{user_id}')
+
+                if response.status_code == 404:
+                    raise HTTPException(status_code=404, detail="User not found")
+                
+                response.raise_for_status()
+                
+                return response.json()
+            
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                return {}
+
+        except httpx.TimeoutException:
+            raise HTTPException(
+                status_code=504, 
+                detail="Service unavailable, request timed out"
+            )
+
+        except httpx.RequestError as e:
+            raise HTTPException(
+                status_code=503, 
+                detail="Service unavailable, request error"
+            )
