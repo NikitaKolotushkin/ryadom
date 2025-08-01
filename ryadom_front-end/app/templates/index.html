@@ -37,8 +37,8 @@
         </div>
 
         <div class="events">
-            {% if events %}
-                {%  for event_data in events %}
+            {% if events.upcoming %}
+                {%  for event_data in events.upcoming %}
                 <a href="/event/{{ event_data.id }}" target="_blank" class="event">
                     <img src="{{ event_data.photo if event_data.photo else '/static/src/img/event.png' }}" alt="Мероприятие" class="event__photo">
                     <p class="event__card-name">{{ event_data.name }}</p>
@@ -48,6 +48,21 @@
             {% else %}
                 <p>События по заданным параметрам не найдены... :(</p>
             {% endif %}
+        </div>
+        
+        <div class="archive">
+            <h3>Прошедшие события</h3>
+            <div class="events">
+                {% if events.past %}
+                    {%  for event_data in events.past %}
+                    <a href="/event/{{ event_data.id }}" target="_blank" class="event">
+                        <img src="{{ event_data.photo if event_data.photo else '/static/src/img/event.png' }}" alt="Мероприятие" class="event__photo">
+                        <p class="event__card-name">{{ event_data.name }}</p>
+                        <p class="event__card-date">{{ event_data.human_date }} {{ '– ' + event_data.start_time if event_data.start_time else ''}}</p>
+                    </a>
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
     </div>
 
