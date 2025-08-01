@@ -157,7 +157,7 @@ class FrontEndService:
         for event in events:
             event['human_date'] = ' '.join(self._get_human_date(event['date']).split()[:2])
 
-        active_category = category if category in self._get_allowed_categories() else None
+        active_category = category if category in [el.get('id') for el in self._get_allowed_categories()] else None
 
         context = {
             'title': 'Ryadom | Главная',

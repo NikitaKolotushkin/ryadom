@@ -5,7 +5,7 @@
                 {% for category in allowed_categories %}
                     <li class="category-nav__item">
                         <a href="{{ context.update_query_params(category=category.id) }}" 
-                        class="category-nav__link {% if active_category %}active{% endif %}">
+                        class="category-nav__link {% if category.id == active_category %}active{% endif %}">
                             {{ category.name }}
                         </a>
                     </li>

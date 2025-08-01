@@ -132,6 +132,11 @@ nav {
     transition: var(--base--transition);
 }
 
+.category-nav__link.active {
+    color: var(--accent-color);
+    border-bottom: 2px solid var(--accent-color);
+}
+
 .slider {
     position: relative;
     overflow: hidden;
