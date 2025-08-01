@@ -154,6 +154,9 @@ class FrontEndService:
 
         events = await self._get_filtered_events(category, selected_date)
 
+        for event in events:
+            event['human_date'] = ' '.join(self._get_human_date(event['date']).split()[:2])
+
         active_category = category if category in self._get_allowed_categories() else None
 
         context = {
@@ -162,6 +165,7 @@ class FrontEndService:
             'events': events,
             'active_category': active_category,
             'allowed_categories': self._get_allowed_categories(),
+            'slides': events[:3]
         }
 
         return self.render_template(
@@ -179,6 +183,7 @@ class FrontEndService:
             'title': f'Ryadom | {event_data['name']}',
             'event_data': event_data,
             'category': self._get_russian_category_name(event_data['category']),
+            'human_date': self._get_human_date(event_data['date'])
         }
 
         return self.render_template(
@@ -258,8 +263,8 @@ class FrontEndService:
         if category and category in [category_['id'] for category_ in self._get_allowed_categories()]:
             filtered_events = [event for event in filtered_events if event['category'] == category]
         
-        # if date:
-        #     filtered_events = [event for event in filtered_events if event['date'] == date]
+        if date:
+            filtered_events = [event for event in filtered_events if str(event['date']) == str(date)]
         
         return filtered_events
     
@@ -270,7 +275,7 @@ class FrontEndService:
         if not date_str:
             return None
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d").date()
+            return datetime.strptime(date_str, "%d-%m-%Y").date()
         except (TypeError, ValueError):
             return None
     
@@ -293,10 +298,30 @@ class FrontEndService:
             week_day = WEEKDAY_ABBREVIATIONS[target_date.weekday()]
 
             date_list.append({
-                'iso_date': target_date.strftime('%Y-%m-%d'),
+                'iso_date': target_date.strftime('%d-%m-%Y'),
                 'month_day': month_day,
                 'week_day': week_day,
                 'is_weekend': week_day in ['сб', 'вс']
             })
 
         return date_list
+
+    def _get_human_date(self, date_str: str):
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+
+        MONTHS_RU = {
+            1: "января",
+            2: "февраля",
+            3: "марта",
+            4: "апреля",
+            5: "мая",
+            6: "июня",
+            7: "июля",
+            8: "августа",
+            9: "сентября",
+            10: "октября",
+            11: "ноября",
+            12: "декабря"
+        }
+
+        return f"{dt.day} {MONTHS_RU[dt.month]} {dt.year}"
