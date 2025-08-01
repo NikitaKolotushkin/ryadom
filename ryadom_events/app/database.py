@@ -3,7 +3,7 @@ import os
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from typing import AsyncGenerator
-from app.models.event import Base
+from app.models.base import Base
 
 
 DATABASE_URL = os.getenv("POSTGRES_EVENTS_URL")
