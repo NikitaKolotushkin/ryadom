@@ -226,7 +226,7 @@ nav {
     margin-bottom: var(--base-vertical-margin);
 }
 
-.affiche h3 {    
+.affiche h3 {
     font-size: 3vh;
 
     color: var(--accent-color);
@@ -284,6 +284,8 @@ nav {
     flex-wrap: wrap;
     gap: 5vh;
     justify-content: center;
+
+    margin-bottom: var(--base-vertical-margin);
 }
 
 .event {
@@ -315,6 +317,17 @@ nav {
     font-weight: 400;
 
     opacity: .65;
+}
+
+.archive {
+    width: 100%;
+    /* margin-bottom: var(--base-vertical-margin); */
+}
+
+.archive h3 {
+    font-size: 3vh;
+
+    color: var(--accent-color);
 }
 
 /* EVENT */
@@ -411,7 +424,7 @@ nav {
     font-size: 2vh;
     text-decoration: none;
 
-    background: var(--accent-color);
+    background: rgb(163 166 175);
 
 }
 
@@ -506,7 +519,7 @@ form input::placeholder {
 }
 
 form button {
-    background-color: var(--accent-color);
+    background-color: rgb(163 166 175);
     color: var(--main-bg-color);
     font-size: 2.2vh;
     font-weight: 400;
