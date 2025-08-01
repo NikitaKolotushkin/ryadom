@@ -4,7 +4,7 @@
 import os
 import httpx
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -159,13 +159,15 @@ class FrontEndService:
 
         active_category = category if category in [el.get('id') for el in self._get_allowed_categories()] else None
 
+        events = self._sort_events(events)
+
         context = {
             'title': 'Ryadom | Главная',
             'date_list': date_list,
             'events': events,
             'active_category': active_category,
             'allowed_categories': self._get_allowed_categories(),
-            'slides': list(await self.get_all_events())[:3]
+            'slides': events.get('upcoming')[:3]
         }
 
         return self.render_template(
@@ -179,11 +181,14 @@ class FrontEndService:
         event_data = await self.get_event_data(event_id)
         category = self._get_allowed_categories()
 
+        is_past = date.fromisoformat(event_data['date']) < date.today()
+
         context = {
             'title': f'Ryadom | {event_data['name']}',
             'event_data': event_data,
             'category': self._get_russian_category_name(event_data['category']),
-            'human_date': self._get_human_date(event_data['date'])
+            'human_date': self._get_human_date(event_data['date']),
+            'is_past': is_past
         }
 
         return self.render_template(
@@ -325,3 +330,22 @@ class FrontEndService:
         }
 
         return f"{dt.day} {MONTHS_RU[dt.month]} {dt.year}"
+
+    def _sort_events(self, events):
+        today = date.today()
+    
+        upcoming = []
+        past = []
+        
+        for event in events:
+            event_date = date.fromisoformat(event['date'])
+            
+            if event_date >= today:
+                upcoming.append(event)
+            else:
+                past.append(event)
+        
+        return {
+            'upcoming': upcoming,
+            'past': past
+        }
