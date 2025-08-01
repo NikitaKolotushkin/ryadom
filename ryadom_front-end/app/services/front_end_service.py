@@ -165,7 +165,7 @@ class FrontEndService:
             'events': events,
             'active_category': active_category,
             'allowed_categories': self._get_allowed_categories(),
-            'slides': events[:3]
+            'slides': list(await self.get_all_events())[:3]
         }
 
         return self.render_template(
