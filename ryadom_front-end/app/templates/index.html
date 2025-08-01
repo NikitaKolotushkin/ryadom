@@ -7,13 +7,15 @@
 
     <div class="container">
         <div class="slider">
-            <div class="slider__element" style="background-image: url('/static/src/img/banner.png');">
-                <div class="slider__element-text">
-                    <h4>Унивидение - Финал</h4>
-                    <p>27 апреля 2025</p>
-                    <p>Михайловская дача</p>
-                </div>
-            </div>
+            {% for slide in slides %}
+                <a href="/event/{{ slide.id }}" target="_blank" class="slider__element {% if loop.index0 == 0 %}active{% endif %}" style="background-image: url('{{ slide.banner if slide.banner else '/static/src/img/banner.png' }}');">
+                    <div class="slider__element-text">
+                        <h4>{{ slide.name }}</h4>
+                        <p>{{ slide.human_date }}</p>
+                        <p>{{ slide.location }}</p>
+                    </div>
+                </a>
+            {% endfor %}
         </div>
 
         <div class="affiche">
@@ -40,7 +42,7 @@
                 <a href="/event/{{ event_data.id }}" target="_blank" class="event">
                     <img src="{{ event_data.photo if event_data.photo else '/static/src/img/event.png' }}" alt="Мероприятие" class="event__photo">
                     <p class="event__card-name">{{ event_data.name }}</p>
-                    <p class="event__card-date">28 мая – 16:00</p>
+                    <p class="event__card-date">{{ event_data.human_date }} {{ '– ' + event_data.start_time if event_data.start_time else ''}}</p>
                 </a>
                 {% endfor %}
             {% else %}
@@ -48,4 +50,6 @@
             {% endif %}
         </div>
     </div>
+
+    <script src="/static/js/slider.js"></script>
 {% endblock %}
