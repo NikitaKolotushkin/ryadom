@@ -11,7 +11,7 @@ RUN rm -rf /var/lib/apt/lists/*
 COPY requirements/ requirements/
 
 RUN --mount=type=secret,id=github_token \
-    bash -c "export GITHUB_TOKEN=$(cat /run/secrets/github_token) && pip install --no-cache-dir --user -r requirements/shared.txt"
+    bash -c "export GITHUB_TOKEN=$(cat /run/secrets/github_token) && pip install --force-reinstall --no-cache-dir --user -r requirements/shared.txt"
 
 RUN pip install --no-cache-dir --user -r requirements/dev.txt
 
