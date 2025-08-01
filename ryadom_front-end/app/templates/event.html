@@ -10,14 +10,19 @@
                 <div class="event__tags">
                     <p>{{ category }}</p>
                     <p>{{ 'Оффлайн' if event_data.format == 'offline' else 'Онлайн' }}</p>
+                    {% if is_past %}
+                        <p>Архив</p>
+                    {% endif %}
                 </div>
                 <h3 class="event__header-title">{{ event_data.name }}</h3>
                 <p class="event__header-date">{{ human_date }}</p>
                 <p class="event__header-place">{{ event_data.location }}</p>
-                <div class="event__header-buttons">
-                    <a href="#">Участвовать</a>
-                    <a href="#"><img src="/static/src/img/heart.png" alt=""></a>
-                </div>
+                {% if not is_past %}
+                    <div class="event__header-buttons">
+                        <a href="#">Участвовать</a>
+                        <a href="#"><img src="/static/src/img/heart.png" alt=""></a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </header>
