@@ -3,6 +3,7 @@ import httpx
 import typing
 
 import ryadom_schemas.events as schemas_events
+import ryadom_schemas.members as schemas_members
 import ryadom_schemas.users as schemas_users
 from fastapi import HTTPException
 
@@ -95,6 +96,22 @@ class RouterService:
     async def delete_event_from_event_service(self, event_id: int):
         async with httpx.AsyncClient() as client:
             response = await client.delete(f'{self.events_service_url}/events/{event_id}')
+
+            response.raise_for_status()
+
+            return response.json()
+
+    async def add_member_to_event(self, event_id: int, member_data: schemas_members.MemberCreate):
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f'{self.events_service_url}/events/{event_id}/members/', json=member_data.model_dump())
+
+            response.raise_for_status()
+
+            return response.json()
+        
+    async def get_members_by_event_id_from_event_service(self, event_id: int):
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f'{self.events_service_url}/events/{event_id}/members/')
 
             response.raise_for_status()
 

@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Request
 
 from app.services.router_service import RouterService
 import ryadom_schemas.events as schemas_events
+import ryadom_schemas.members as schemas_members
 import ryadom_schemas.users as schemas_users
 
 
@@ -107,5 +108,23 @@ async def delete_event(request: Request, event_id: int):
     try:
         event_data = await router_service.delete_event_from_event_service(event_id)
         return event_data
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.post('/events/{event_id}/members/')
+async def add_member_to_event(request: Request, event_id: int, member: schemas_users.UserCreate):
+    try:
+        member_data = await router_service.add_member_to_event_from_event_service(event_id, member)
+        return member_data
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    
+
+@router.get('/events/{event_id}/members/')
+async def get_members_by_event_id(request: Request, event_id: int):
+    try:
+        members_data = await router_service.get_members_by_event_id_from_event_service(event_id)
+        return members_data
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
