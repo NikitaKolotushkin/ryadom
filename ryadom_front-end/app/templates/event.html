@@ -19,8 +19,8 @@
                 <p class="event__header-place">{{ event_data.location }}</p>
                 {% if not is_past %}
                     <div class="event__header-buttons">
-                        <a href="#">Участвовать</a>
-                        <a href="#"><img src="/static/src/img/heart.png" alt=""></a>
+                        <a href="">Участвовать</a>
+                        <a href=""><img src="/static/src/img/heart.png" alt=""></a>
                     </div>
                 {% endif %}
             </div>
@@ -47,13 +47,13 @@
         <div class="event__organizers">
             <h3>Организаторы</h3>
             <ul class="people_list">
-                {% for _ in range(3) %}
-                <li>
-                    <a href="">
-                        <img src="/static/src/img/profile.png" alt="">
-                        <p>Человек_name</p>
-                    </a>
-                </li>
+                {% for organizer in organizers %}
+                    <li>
+                        <a href="">
+                            <img src="{{ organizer.photo if organizer.photo else '/static/src/img/profile.png' }}" alt="">
+                            <p>{{ organizer.name }}</p>
+                        </a>
+                    </li>
                 {% endfor %}
             </ul>
         </div>
