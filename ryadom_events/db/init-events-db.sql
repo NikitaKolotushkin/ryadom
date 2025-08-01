@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS event (
 CREATE TABLE IF NOT EXISTS member (
     id SERIAL PRIMARY KEY,
     event_id INTEGER NOT NULL REFERENCES event(id) ON DELETE CASCADE,
-    user_id TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
     role TEXT DEFAULT 'participant',
     UNIQUE(event_id, user_id)
 );
