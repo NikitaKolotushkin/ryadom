@@ -80,57 +80,44 @@
                 const url = `https://geocode-maps.yandex.ru/v1/?apikey=${apiKey}&geocode=${address}&format=json`;
 
                 fetch(url)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`Ошибка HTTP: ${response.status}`);
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         const pos = data.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point?.pos;
-
+                        
                         if (pos) {
-                            console.log('Полученные координаты:', pos);
-
                             const mapElement = document.querySelector('.event__address-map');
-                            if (!mapElement) {
-                                console.error('Элемент карты не найден');
-                                return;
-                            }
-
+                            if (!mapElement) return;
+                            
                             const currentStyle = mapElement.style.background || getComputedStyle(mapElement).background;
                             const urlMatch = currentStyle.match(/url\(["']?(.*?)[^"']?["']?\)/);
                             const currentUrl = urlMatch ? urlMatch[1] : '';
-
-                            if (!currentUrl) {
-                                console.error('URL карты не найден в стилях');
-                                return;
-                            }
-
+                            
+                            if (!currentUrl) return;
+                            
+                            const originalApiKey = currentUrl.match(/apikey=([^&]+)/)?.[1] || 
+                                                currentUrl.match(/API_KEY=([^&]+)/)?.[1];
+                            
                             const [baseUrl, paramsString] = currentUrl.split('?');
                             const params = new URLSearchParams(paramsString);
-
+                            
                             const [lon, lat] = pos.split(' ');
-
-                            params.set('ll', `${lon},${lat}`); 
+                            
+                            params.set('ll', `${lon},${lat}`);
                             params.set('pt', `${lon},${lat},pmwtm1`);
-
+                            
+                            if (originalApiKey) {
+                                params.set('apikey', originalApiKey);
+                            }
+                            
                             const newUrl = `${baseUrl}?${params.toString().replace(/%2C/g, ',')}`;
-
+                            
                             const styleWithoutUrl = currentStyle.replace(/url\(.*?\)/, '').trim();
                             const finalStyle = `url("${newUrl}") ${styleWithoutUrl || 'center / cover no-repeat'}`;
-
+                            
                             mapElement.style.background = finalStyle;
-
-                            console.log('Карта обновлена с новыми координатами');
-                        } else {
-                            console.error('Координаты не найдены в ответе');
                         }
                     })
-                    .catch(error => {
-                        console.error(`Произошла ошибка: ${error.message}`);
-                        alert(`Произошла ошибка:\n${error.message}`);
-                    });
+                    .catch(console.error);
             });
         </script>
     {% endif %}
