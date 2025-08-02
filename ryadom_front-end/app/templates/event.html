@@ -75,11 +75,13 @@
     {%  if event_data.format == 'offline' %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const apiKey = 'API_KEY';
+                const mapApiKey = 'MAP_API';
+                const geocoderApiKey = 'GEO_API';
+                
                 const address = encodeURIComponent('{{ event_data.address }}');
-                const url = `https://geocode-maps.yandex.ru/v1/?apikey=${apiKey}&geocode=${address}&format=json`;
+                const geocoderUrl = `https://geocode-maps.yandex.ru/v1/?apikey=${geocoderApiKey}&geocode=${address}&format=json`;
 
-                fetch(url)
+                fetch(geocoderUrl)
                     .then(response => response.json())
                     .then(data => {
                         const pos = data.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point?.pos;
@@ -89,27 +91,17 @@
                             if (!mapElement) return;
                             
                             const currentStyle = mapElement.style.background || getComputedStyle(mapElement).background;
-                            const urlMatch = currentStyle.match(/url\(["']?(.*?)[^"']?["']?\)/);
-                            const currentUrl = urlMatch ? urlMatch[1] : '';
+                            const urlMatch = currentStyle.match(/url\(["']?(https?:\/\/[^?]+)\?/);
                             
-                            if (!currentUrl) return;
-                            
-                            const originalApiKey = currentUrl.match(/apikey=([^&]+)/)?.[1] || 
-                                                currentUrl.match(/API_KEY=([^&]+)/)?.[1];
-                            
-                            const [baseUrl, paramsString] = currentUrl.split('?');
-                            const params = new URLSearchParams(paramsString);
-                            
-                            const [lon, lat] = pos.split(' ');
-                            
-                            params.set('ll', `${lon},${lat}`);
-                            params.set('pt', `${lon},${lat},pmwtm1`);
-                            
-                            if (originalApiKey) {
-                                params.set('apikey', originalApiKey);
+                            if (!urlMatch) {
+                                console.error('Не удалось извлечь базовый URL карты');
+                                return;
                             }
                             
-                            const newUrl = `${baseUrl}?${params.toString().replace(/%2C/g, ',')}`;
+                            const baseUrl = urlMatch[1];
+                            const [lon, lat] = pos.split(' ');
+                            
+                            const newUrl = `${baseUrl}?ll=${lon},${lat}&lang=ru_RU&size=650,450&z=13&pt=${lon},${lat},pmwtm1&apikey=${mapApiKey}`;
                             
                             const styleWithoutUrl = currentStyle.replace(/url\(.*?\)/, '').trim();
                             const finalStyle = `url("${newUrl}") ${styleWithoutUrl || 'center / cover no-repeat'}`;
