@@ -115,7 +115,7 @@
                             params.set('ll', `${lon},${lat}`); 
                             params.set('pt', `${lon},${lat},pmwtm1`);
 
-                            const newUrl = `${baseUrl}?${params.toString()}`;
+                            const newUrl = `${baseUrl}?${params.toString().replace(/%2C/g, ',')}`;
 
                             const styleWithoutUrl = currentStyle.replace(/url\(.*?\)/, '').trim();
                             const finalStyle = `url("${newUrl}") ${styleWithoutUrl || 'center / cover no-repeat'}`;
