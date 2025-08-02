@@ -40,8 +40,7 @@
         <div class="event__address">
             <h3>Локация</h3>
             {%  if event_data.format == 'offline' %}
-                <div style="background: url(https://static-maps.yandex.ru/v1?ll=37.620070,55.753630&lang=ru_RU&size=650,450&z=13&pt=37.620070,55.753630,pmwtm1~37.64,55.76363,pmwtm99&apikey=API_KEY) center / cover no-repeat;" class="event__address-map">
-                </div>
+                <div style="background: url(https://static-maps.yandex.ru/v1?ll=37.620070,55.753630&lang=ru_RU&size=650,450&z=13&pt=37.620070,55.753630,pmwtm1~37.64,55.76363,pmwtm99&apikey=API_KEY) center / cover no-repeat;" class="event__address-map"></div>
             {% endif %}
             <p>{{ event_data.address }}</p>
         </div>
@@ -72,4 +71,30 @@
             </ul>
         </div>
     </div>
+    <script>
+        const apiKey = 'API_KEY';
+        const address = encodeURIComponent('Саратов техническая 35/45');
+        const url = `https://geocode-maps.yandex.ru/v1/?apikey=${apiKey}&geocode=${address}&format=json`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Ошибка HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const pos = data.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point?.pos;
+
+                if (pos) {
+                    console.log(pos);
+                } else {
+                    console.error('Координаты не найдены в ответе');
+                }
+            })
+            .catch(error => {
+                console.error(`Произошла ошибка: ${error.message}`);
+                alert(`Произошла ошибка:\n${error.message}`);
+            });
+    </script>
 {% endblock %}
