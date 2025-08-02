@@ -71,30 +71,67 @@
             </ul>
         </div>
     </div>
-    <script>
-        const apiKey = 'API_KEY';
-        const address = encodeURIComponent('Саратов техническая 35/45');
-        const url = `https://geocode-maps.yandex.ru/v1/?apikey=${apiKey}&geocode=${address}&format=json`;
 
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Ошибка HTTP: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const pos = data.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point?.pos;
+    {%  if event_data.format == 'offline' %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const apiKey = 'API_KEY';
+                const address = encodeURIComponent('{{ event_data.address }}');
+                const url = `https://geocode-maps.yandex.ru/v1/?apikey=${apiKey}&geocode=${address}&format=json`;
 
-                if (pos) {
-                    console.log(pos);
-                } else {
-                    console.error('Координаты не найдены в ответе');
-                }
-            })
-            .catch(error => {
-                console.error(`Произошла ошибка: ${error.message}`);
-                alert(`Произошла ошибка:\n${error.message}`);
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Ошибка HTTP: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const pos = data.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point?.pos;
+
+                        if (pos) {
+                            console.log('Полученные координаты:', pos);
+
+                            const mapElement = document.querySelector('.event__address-map');
+                            if (!mapElement) {
+                                console.error('Элемент карты не найден');
+                                return;
+                            }
+
+                            const currentStyle = mapElement.style.background || getComputedStyle(mapElement).background;
+                            const urlMatch = currentStyle.match(/url\(["']?(.*?)[^"']?["']?\)/);
+                            const currentUrl = urlMatch ? urlMatch[1] : '';
+
+                            if (!currentUrl) {
+                                console.error('URL карты не найден в стилях');
+                                return;
+                            }
+
+                            const [baseUrl, paramsString] = currentUrl.split('?');
+                            const params = new URLSearchParams(paramsString);
+
+                            const [lon, lat] = pos.split(' ');
+
+                            params.set('ll', `${lon},${lat}`); 
+                            params.set('pt', `${lon},${lat},pmwtm1`);
+
+                            const newUrl = `${baseUrl}?${params.toString()}`;
+
+                            const styleWithoutUrl = currentStyle.replace(/url\(.*?\)/, '').trim();
+                            const finalStyle = `url("${newUrl}") ${styleWithoutUrl || 'center / cover no-repeat'}`;
+
+                            mapElement.style.background = finalStyle;
+
+                            console.log('Карта обновлена с новыми координатами');
+                        } else {
+                            console.error('Координаты не найдены в ответе');
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Произошла ошибка: ${error.message}`);
+                        alert(`Произошла ошибка:\n${error.message}`);
+                    });
             });
-    </script>
+        </script>
+    {% endif %}
 {% endblock %}
