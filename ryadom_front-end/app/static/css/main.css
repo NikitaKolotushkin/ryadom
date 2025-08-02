@@ -452,7 +452,9 @@ nav {
 
 .event__address-map {
     width: 100%;
-    height: 35vh;
+    height: 40vh;
+
+    margin-bottom: var(--base-vertical-margin);
 
     background-position: center;
     background-size: cover;
