@@ -110,8 +110,7 @@ services:
       - "443:443"
     volumes:
       - ./ryadom_nginx/conf.d:/etc/nginx/conf.d
-      - letsencrypt:/etc/letsencrypt
-      - certbot_data:/var/www/certbot
+      - ./ryadom_nginx/ssl:/etc/nginx/ssl
     depends_on:
       - front_end
 
