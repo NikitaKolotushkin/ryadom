@@ -114,29 +114,10 @@ services:
     depends_on:
       - front_end
 
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - letsencrypt:/etc/letsencrypt
-      - certbot_data:/var/www/certbot
-      - ./ryadom_nginx/conf.d:/etc/nginx/conf.d
-    command: >
-      certonly --webroot
-      --webroot-path=/var/www/certbot
-      --email kolotushkin.na@gmail.com
-      --agree-tos
-      --no-eff-email
-      -d ryadom-spbu.ru
-    depends_on:
-      - nginx
-
 
 volumes:
   postgres_events_data:
   postgres_users_data:
-  letsencrypt:
-  certbot_data:
 
 networks:
   ryadom-network:
