@@ -40,7 +40,7 @@
         <div class="event__address">
             <h3>Локация</h3>
             {%  if event_data.format == 'offline' %}
-                <div style="background: url(https://static-maps.yandex.ru/v1?ll=37.620070,55.753630&lang=ru_RU&size=650,450&z=13&pt=37.620070,55.753630,pmwtm1~37.64,55.76363,pmwtm99&apikey=API_KEY) center / cover no-repeat;" class="event__address-map"></div>
+                <div style="background: url(https://static-maps.yandex.ru/v1) center / cover no-repeat;" class="event__address-map"></div>
             {% endif %}
             <p>{{ event_data.address }}</p>
         </div>
