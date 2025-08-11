@@ -1,6 +1,11 @@
 .idea/
 .DS_STORE
 
+# SSL
+*.crt
+*.pem
+*.key
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
