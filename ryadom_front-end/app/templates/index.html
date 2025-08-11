@@ -57,7 +57,7 @@
                     {%  for event_data in events.past %}
                         <a href="/event/{{ event_data.id }}" target="_blank" class="event">
                             <img src="{{ event_data.photo if event_data.photo else '/static/src/img/event.png' }}" alt="Мероприятие" class="event__photo">
-                            <p class="event__card-name">{{ event_data.name }}</p>
+                            <p class="event__card-name">{{ truncateText(event_data.name, 60) }}</p>
                             <p class="event__card-date">{{ event_data.human_date }} {{ '– ' + event_data.start_time if event_data.start_time else ''}}</p>
                         </a>
                     {% endfor %}
@@ -67,4 +67,23 @@
     </div>
 
     <script src="/static/js/slider.js"></script>
+
+    <script>
+        function truncateText(text, maxLength = 60) {
+            if (!text || text.length <= maxLength) return text;
+            
+            let truncated = text.substring(0, maxLength + 1);
+            
+            const lastSpaceIndex = truncated.lastIndexOf(' ');
+            
+            if (lastSpaceIndex > 0 && lastSpaceIndex < maxLength) {
+                truncated = truncated.substring(0, lastSpaceIndex);
+            } 
+            else {
+                truncated = truncated.substring(0, maxLength);
+            }
+            
+            return truncated.trim() + '…';
+        }
+    </script>
 {% endblock %}
