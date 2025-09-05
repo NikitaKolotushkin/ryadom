@@ -98,6 +98,7 @@ services:
       - "8081:8081"
     env_file:
       - app.env
+      - secrets.env
 
   nginx:
     container_name: nginx
