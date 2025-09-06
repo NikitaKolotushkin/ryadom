@@ -3,12 +3,15 @@
 
 from fastapi import FastAPI
 
+from app.config import get_config
 from app.database import engine
 from app.routes.routes import router
 from app.models.user import Base
 
 
-app = FastAPI()
+config = get_config()
+
+app = FastAPI(docs_url=config.DOCS_URL, redoc_url=config.REDOC_URL, openapi_url=config.OPENAPI_URL)
 
 
 @app.on_event('startup')
