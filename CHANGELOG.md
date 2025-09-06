@@ -19,6 +19,18 @@
 
 - ...
 
+## [1.0.1] - 2025-09-06
+
+### Added
+
+- Разделение на dev/prod режими работы
+- Единый конфигурационный файл приложения
+
+### Fixed
+
+- Убрана возможность неавторизованного подключения домена к серверу
+
+
 ## [1.0] - 2025-09-05
 
 ### Added
@@ -52,5 +64,6 @@
 - Жестко закодированные API-ключи из кодовой базы.
 - Ненужные зависимости (например, временные модули для отладки).
 
-[unreleased]: https://github.com/NikitaKolotushkin/ryadom/compare/v1.0...HEAD
+[unreleased]: https://github.com/NikitaKolotushkin/ryadom/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/NikitaKolotushkin/ryadom/compare/v1.0...v1.0.1
 [1.0]: https://github.com/NikitaKolotushkin/ryadom/releases/tag/v1.0
