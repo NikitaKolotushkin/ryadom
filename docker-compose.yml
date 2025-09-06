@@ -13,6 +13,8 @@ services:
       - "8080:8080"
     env_file:
       - app.env
+    volumes:
+      - ./config:/app/app/config
 
   events:
     container_name: events
@@ -26,6 +28,8 @@ services:
       - "8083:8083"
     env_file:
       - app.env
+    volumes:
+      - ./config:/app/app/config
     depends_on:
       postgres_events:
         condition: service_healthy
@@ -63,6 +67,8 @@ services:
       - "8082:8082"
     env_file:
       - app.env
+    volumes:
+      - ./config:/app/app/config
     depends_on:
       postgres_users:
         condition: service_healthy
@@ -99,6 +105,8 @@ services:
     env_file:
       - app.env
       - secrets.env
+    volumes:
+      - ./config:/app/app/config
 
   nginx:
     container_name: nginx
