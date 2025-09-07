@@ -144,7 +144,7 @@ async def get_coordinates_by_address(request: Request, address: str):
 @router.get('/static-map')
 async def get_static_map(request: Request, lat: float, lon: float, zoom: int, size: str):
     try:
-        static_map = await router_service.get_static_map(lat, lon, zoom, size)
+        static_map = await router_service.get_static_map_url_by_coordinates(lat, lon, zoom, size)
         return static_map
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))

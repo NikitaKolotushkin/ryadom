@@ -134,7 +134,7 @@ class RouterService:
         lat: Optional[int] = None,
         lon: Optional[int] = None,
         zoom: Optional[int] = 13,
-        size: Optional[str] = '640,450'
+        size: Optional[str] = '650,450'
     ):
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.maps_service_url}/static-map?lat={lat}&lon={lon}&zoom={zoom}&size={size}')
