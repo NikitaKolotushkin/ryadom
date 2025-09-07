@@ -43,7 +43,6 @@ class MapsService:
                         "apikey": self.geocoder_api_key,
                         "geocode": address,
                         "format": "json",
-                        "results": 1
                     }
                 )
 
