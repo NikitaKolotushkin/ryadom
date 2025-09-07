@@ -118,7 +118,7 @@ class MapsService:
                 f"&apikey={self.maps_api_key}"
             )
         
-            return schemas_maps.StaticMapResponse(map_url)
+            return schemas_maps.StaticMapResponse(url=map_url)
         
         except Exception as e:
             raise ValueError(f'Ошибка генерации URL карты: {str(e)}')
