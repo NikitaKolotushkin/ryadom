@@ -108,6 +108,21 @@ services:
     volumes:
       - ./config:/app/app/config
 
+  maps:
+    container_name: maps
+    build:
+      context: ./ryadom_maps
+      secrets:
+        - github_token
+    networks:
+      - ryadom-network
+    ports:
+      - "8084:8084"
+    env_file:
+      - app.env
+    volumes:
+      - ./config:/app/app/config
+
   nginx:
     container_name: nginx
     build:
