@@ -83,13 +83,13 @@ class MapsService:
 
         
         except httpx.HTTPStatusError as e:
-            pass
+            raise ValueError('Ошибка геокодера')
         
         except httpx.RequestError as e:
-            pass
+            raise ValueError('Ошибка геокодера')
         
         except Exception as e:
-            pass
+            raise ValueError('Ошибка геокодера')
 
     async def get_static_map_url_by_coordinates(
             self, 
