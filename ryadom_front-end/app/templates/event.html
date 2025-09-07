@@ -75,39 +75,32 @@
     {%  if event_data.format == 'offline' %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const mapApiKey = 'MAP_API';
-                const geocoderApiKey = 'GEO_API';
-                
                 const address = encodeURIComponent('{{ event_data.address }}');
-                const geocoderUrl = `https://geocode-maps.yandex.ru/v1/?apikey=${geocoderApiKey}&geocode=${address}&format=json`;
 
-                fetch(geocoderUrl)
-                    .then(response => response.json())
-                    .then(data => {
-                        const pos = data.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.Point?.pos;
-                        
-                        if (pos) {
-                            const mapElement = document.querySelector('.event__address-map');
-                            if (!mapElement) return;
-                            
-                            const currentStyle = mapElement.style.background || getComputedStyle(mapElement).background;
-                            const urlMatch = currentStyle.match(/url\(["']?(https?:\/\/[^?]+)\?/);
-                            
-                            if (!urlMatch) {
-                                console.error('Не удалось извлечь базовый URL карты');
-                                return;
-                            }
-                            
-                            const baseUrl = urlMatch[1];
-                            const [lon, lat] = pos.split(' ');
-                            
-                            const newUrl = `${baseUrl}?ll=${lon},${lat}&lang=ru_RU&size=650,450&z=13&pt=${lon},${lat},pmwtm1&apikey=${mapApiKey}`;
-                            
-                            const styleWithoutUrl = currentStyle.replace(/url\(.*?\)/, '').trim();
-                            const finalStyle = `url("${newUrl}") ${styleWithoutUrl || 'center / cover no-repeat'}`;
-                            
-                            mapElement.style.background = finalStyle;
-                        }
+                fetch('/api/geocode?address=' + address)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Ошибка геокодирования');
+                        return response.json();
+                    })
+                    .then(geocodeData => {
+                        const {
+                            lat,
+                            lon,
+                            addr
+                        } = geocodeData;
+                        return fetch(`/api/static-map?lat=${lat}&lon=${lon}&zoom=13&size=650,450`);
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Ошибка генерации карты');
+                        return response.json();
+                    })
+                    .then(mapData => {
+                        const mapElement = document.querySelector('.event__address-map');
+                        if (!mapElement) return;
+
+                        mapElement.style.backgroundImage = `url("${mapData.url}")`;
+                        mapElement.style.backgroundSize = 'cover';
+                        mapElement.style.backgroundPosition = 'center';
                     })
                     .catch(console.error);
             });

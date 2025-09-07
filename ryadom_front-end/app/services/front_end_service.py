@@ -20,9 +20,6 @@ class FrontEndService:
     
     def __init__(self):
         self.edge_router_service_url = os.getenv("EDGE_ROUTER_SERVICE_URL")
-
-        self.maps_api_key = os.getenv("MAPS_API")
-        self.geocoder_api_key = os.getenv("GEOCODER_API")
         
         self.templates = Jinja2Templates(directory='app/templates')
         self.templates.env.globals["request_context"] = self.request_context
@@ -195,11 +192,7 @@ class FrontEndService:
             'category': self._get_russian_category_name(event_data['category']),
             'human_date': self._get_human_date(event_data['date']),
             'is_past': is_past,
-            'organizers': organizers,
-            'api_keys' : {
-                'maps_api_key' : self.maps_api_key,
-                'geocoder_api_key' : self.geocoder_api_key
-            }
+            'organizers': organizers
         }
 
         return self.render_template(
