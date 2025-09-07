@@ -82,13 +82,13 @@ class MapsService:
 
         
         except httpx.HTTPStatusError as e:
-            raise ValueError(f'{e}')
+            raise ValueError(f'{e}' + " 1")
         
         except httpx.RequestError as e:
-            raise ValueError(f'{e}')
+            raise ValueError(f'{e}' + " 2")
         
         except Exception as e:
-            raise ValueError(f'{e}')
+            raise ValueError(f'{e}' + " 3")
 
     async def get_static_map_url_by_coordinates(
             self, 
