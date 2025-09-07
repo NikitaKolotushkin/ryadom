@@ -128,3 +128,23 @@ async def get_members_by_event_id(request: Request, event_id: int):
         return members_data
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
+    
+
+# MAPS
+
+@router.get('/geocode')
+async def get_coordinates_by_address(request: Request, address: str):
+    try:
+        coordinates = await router_service.get_coordinates_by_address(address)
+        return coordinates
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    
+
+@router.get('/static-map')
+async def get_static_map(request: Request, lat: float, lon: float, zoom: int, size: str):
+    try:
+        static_map = await router_service.get_static_map(lat, lon, zoom, size)
+        return static_map
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))

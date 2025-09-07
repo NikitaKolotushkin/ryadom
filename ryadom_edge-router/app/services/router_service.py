@@ -1,11 +1,12 @@
 import os
 import httpx
-import typing
 
 import ryadom_schemas.events as schemas_events
 import ryadom_schemas.members as schemas_members
 import ryadom_schemas.users as schemas_users
+
 from fastapi import HTTPException
+from typing import Optional
 
 
 class RouterService:
@@ -14,6 +15,7 @@ class RouterService:
         self.front_end_service_url = os.getenv("FRONT_END_SERVICE_URL")
         self.users_service_url = os.getenv("USERS_SERVICE_URL")
         self.events_service_url = os.getenv("EVENTS_SERVICE_URL")
+        self.maps_service_url = os.getenv("MAPS_SERVICE_URL")
 
     # USERS
 
@@ -112,6 +114,30 @@ class RouterService:
     async def get_members_by_event_id_from_event_service(self, event_id: int):
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.events_service_url}/events/{event_id}/members/')
+
+            response.raise_for_status()
+
+            return response.json()
+        
+    # MAPS
+
+    async def get_coordinates_by_address(self, address: str):
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f'{self.maps_service_url}/geocode?address={address}')
+
+            response.raise_for_status()
+
+            return response.json()
+        
+    async def get_static_map_url_by_coordinates(
+        self, 
+        lat: Optional[int] = None,
+        lon: Optional[int] = None,
+        zoom: Optional[int] = 13,
+        size: Optional[str] = '640,450'
+    ):
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f'{self.maps_service_url}/static-map?lat={lat}&lon={lon}&zoom={zoom}&size={size}')
 
             response.raise_for_status()
 
