@@ -120,6 +120,7 @@ services:
       - "8084:8084"
     env_file:
       - app.env
+      - secrets.env
     volumes:
       - ./config:/app/app/config
 
