@@ -72,12 +72,6 @@ class MapsService:
 
                 self.geocode_cache[address] = result
 
-                print(result)
-                print(result)
-                print(result)
-                print(result)
-                print(result)
-
                 return schemas_maps.GeocodeResponse.model_validate(result, from_attributes=True)
 
         
@@ -92,10 +86,10 @@ class MapsService:
 
     async def get_static_map_url_by_coordinates(
             self, 
-            lat: Optional[int] = None,
-            lon: Optional[int] = None,
+            lat: Optional[float] = None,
+            lon: Optional[float] = None,
             zoom: Optional[int] = 13,
-            size: Optional[str] = '640,450'
+            size: Optional[str] = '650,450'
         ):
         """
         Получить URL статической карты по координатам
@@ -113,6 +107,9 @@ class MapsService:
             ValueError: если событие не было найдено
         """
 
+        if lat is None or lon is None:
+            raise ValueError("Широта и долгота обязательны для генерации карты")
+
         try:
             map_url = (
                 f"https://static-maps.yandex.ru/v1?ll={lon},{lat}"
@@ -121,7 +118,7 @@ class MapsService:
                 f"&apikey={self.maps_api_key}"
             )
         
-            return schemas_maps.StaticMapResponse.model_validate(map_url, from_attributes=True)
+            return schemas_maps.StaticMapResponse(map_url)
         
         except Exception as e:
             raise ValueError(f'Ошибка генерации URL карты: {str(e)}')
