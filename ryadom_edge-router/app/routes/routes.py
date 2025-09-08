@@ -112,8 +112,8 @@ async def delete_event(request: Request, event_id: int):
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@router.post('/events/{event_id}/members/')
-async def add_member_to_event(request: Request, event_id: int, member: schemas_users.UserCreate):
+@router.post('/events/{event_id}/members/', response_model=schemas_members.MemberResponse)
+async def add_member_to_event(request: Request, event_id: int, member: schemas_members.MemberCreate):
     try:
         member_data = await router_service.add_member_to_event_from_event_service(event_id, member)
         return member_data
