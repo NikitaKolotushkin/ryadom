@@ -103,7 +103,7 @@ class RouterService:
 
             return response.json()
 
-    async def add_member_to_event(self, event_id: int, member_data: schemas_members.MemberCreate):
+    async def add_member_to_event_from_event_service(self, event_id: int, member_data: schemas_members.MemberCreate):
         async with httpx.AsyncClient() as client:
             response = await client.post(f'{self.events_service_url}/events/{event_id}/members/', json=member_data.model_dump())
 
