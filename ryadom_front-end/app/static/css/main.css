@@ -539,3 +539,14 @@ form button {
 form > a {
     color: var(--accent-color);
 }
+
+/* FOOTER */
+
+.footer__inner {
+    display: flex;
+    
+    justify-content: space-between;
+    
+    margin-bottom: var(--base-vertical-margin);
+    margin-top: var(--base-vertical-margin);
+}
