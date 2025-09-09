@@ -4,6 +4,7 @@
 import typing
 
 import ryadom_schemas.users as schemas_users
+import ryadom_schemas.auth as schemas_auth
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -69,3 +70,21 @@ async def delete_user(request: Request, user_id: int, service: UsersService = De
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+# AUTH
+
+@router.post('/auth/login', response_modes=schemas_auth.TokenResponse)
+async def login(
+    request: Request,
+    login_data: schemas_auth.LoginRequest,
+    session: AsyncSession = Depends(get_async_session),
+    service: UsersService = Depends(get_users_service)
+):
+    try:
+        pass
+    
+    except ValueError as e:
+        pass
+    
+    except Exception as e:
+        pass
