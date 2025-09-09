@@ -542,11 +542,60 @@ form > a {
 
 /* FOOTER */
 
-.footer__inner {
-    display: flex;
-    
-    justify-content: space-between;
-    
-    margin-bottom: var(--base-vertical-margin);
+footer {
+    padding: var(--base-vertical-margin) 0;
     margin-top: var(--base-vertical-margin);
+
+    background-color: var(--footer-bg-color);
+    color: var(--main-bg-color);
+}
+
+footer a {
+    display: block;
+
+    text-decoration: none;
+    outline: none;
+
+    color: var(--main-bg-color);
+}
+
+.footer__content {
+    width: 100%;
+}
+
+.footer__texts {
+    width: 100%;
+
+    margin-bottom: var(--base-vertical-margin);
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    font-weight: bold;
+}
+
+.footer__texts p {
+    font-weight: 2vh;
+}
+
+.footer__logo {
+    font-size: 5vh;
+}
+
+.footer__mail {
+    font-size: 4vh;
+}
+
+.footer__logos {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.footer__logos a img {
+    height: 8vh;
 }

@@ -21,3 +21,39 @@
         flex: 0 0 100%; /* 1 элемент в строке */
     }
 }
+
+/* FOOTER */
+
+@media (max-width: 1600px) {
+    .footer__logos {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    
+    .footer__logos a {
+        flex-basis: 50%;
+        box-sizing: border-box;
+
+        text-align: center;
+    }
+
+    .footer__logos a img {
+        height: 6vh;
+    }
+}
+
+@media (max-width: 1390px) {
+    .footer__logo {
+        font-size: 4vh;
+    }
+
+    .footer__mail {
+        font-size: 3vh;
+    }
+}
+
+@media (max-width: 1200px) {
+    .footer__logos a {
+        flex-basis: 100%;
+    }
+}
