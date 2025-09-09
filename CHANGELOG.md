@@ -7,17 +7,37 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-09-09
+
 ### Added
 
-- Файл CHANGELOG.md
+- Добавлено перенаправление для /api/ на edge-router:8080
+- Добавлены переменные окружения MAPS_SERVICE_PORT и MAPS_SERVICE_URL
+- Добавлен сервис ryadom_maps для работы с картами
+- Реализовано API взаимодействия с микросервисом ryadom_maps
+- Создан микросервис для взаимодействия с API Яндекс-карт и геокодера
+- Добавлен шаблон footer'а со стилями и медиазапросами
+- Добавлены логотипы, контактная почта и информация о команде в footer
+ 
+### Fixed
 
-### Changed
+- Исправлен путь проксирования для /api/ (множественные итерации)
+- Исправлены модели данных в функции add_member_to_event
+- Исправлено название функции add_member_to_event на add_member_to_event_from_event_service
+- Устранен ненужный параметр в запросе к геокодеру
+- Исправлена валидация типов данных и формат ответа функции get_static_map_url_by_coordinates()
+- Устранена ошибка передачи аргументов в модель StaticMapResponse
+- Удалены ненужные стили блока с картой
+- Исправлено название функции получения URL карты по координатам в Swagger API
+- Уточнены тексты исключений в обработчиках ошибок
 
-- ...
+### Security
+
+- Удалены API-ключи из публичного доступа, настроено безопасное обращение к микросервису ryadom_maps
 
 ### Removed
 
-- ...
+- Удалены команды для создания фейковых сертификатов (откат предыдущего функционала)
 
 ## [1.0.1] - 2025-09-06
 
@@ -64,6 +84,7 @@
 - Жестко закодированные API-ключи из кодовой базы.
 - Ненужные зависимости (например, временные модули для отладки).
 
-[unreleased]: https://github.com/NikitaKolotushkin/ryadom/compare/v1.0.1...HEAD
+[unreleased]: https://github.com/NikitaKolotushkin/ryadom/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/NikitaKolotushkin/ryadom/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/NikitaKolotushkin/ryadom/compare/v1.0...v1.0.1
 [1.0]: https://github.com/NikitaKolotushkin/ryadom/releases/tag/v1.0
