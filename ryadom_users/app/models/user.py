@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from sqlalchemy import Boolean, Column, Integer, Text
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
-
-Base = declarative_base()
+from app.database import Base
 
 
 class UserModel(Base):
@@ -21,3 +23,9 @@ class UserModel(Base):
     photo = Column(Text)
     email_verified = Column(Boolean, nullable=False, default=False)
     created_at = Column(Text)
+
+    refresh_token = relationship(
+        'RefreshTokenModel', 
+        back_populates='user', 
+        cascade='all, delete-orphan'
+    )
