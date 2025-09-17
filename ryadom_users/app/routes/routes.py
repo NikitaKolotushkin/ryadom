@@ -9,6 +9,7 @@ import ryadom_schemas.auth as schemas_auth
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import create_access_token
 from app.database import get_async_session
 from app.services.users_service import UsersService
 
@@ -73,18 +74,58 @@ async def delete_user(request: Request, user_id: int, service: UsersService = De
     
 # AUTH
 
-@router.post('/auth/login', response_modes=schemas_auth.TokenResponse)
+@router.post('/auth/login', response_model=schemas_auth.Token)
 async def login(
     request: Request,
     login_data: schemas_auth.LoginRequest,
-    session: AsyncSession = Depends(get_async_session),
     service: UsersService = Depends(get_users_service)
 ):
-    try:
-        pass
+    """Аутентификация пользователя и выдача токена"""
+    user = await service.authenticate_user(login_data.email, login_data.password)
+
+    if not user:
+        raise HTTPException(status_code=401, detail='Invalid email or password')
+
+    access_token = create_access_token(data={'sub': str(user.id)})
     
-    except ValueError as e:
-        pass
+    refresh_token = await service.create_refresh_token(
+        user.id,
+        remember_me=login_data.remember_me
+    )
+
+    return {
+        'access_token': access_token,
+        'refresh_token': refresh_token,
+        'token_type': 'bearer',
+        'expires_in': 1800
+    }
+
     
-    except Exception as e:
-        pass
+@router.post('/auth/refresh', response_model=schemas_auth.Token)
+async def refresh_token(
+    request: Request,
+    refresh_token: str,
+    service: UsersService = Depends(get_users_service)
+):
+    """Обновление access-токена с помощью refresh-токена"""
+    user = await service.validate_refresh_token(refresh_token)
+
+    new_access_token = create_access_token(data={'sub': str(user.id)})
+
+    return {
+        'access_token': new_access_token,
+        'refresh_token': refresh_token,
+        'token_type': 'bearer',
+        'expires_in': 1800
+    }
+
+
+@router.post('/auth/logout', response_model=dict)
+async def logout(
+    request: Request,
+    refresh_token: str,
+    service: UsersService = Depends(get_users_service)
+):
+    """Выход из системы"""
+    await service.revoke_refresh_token(refresh_token)
+    return {'message': 'Successfully logged out'}
