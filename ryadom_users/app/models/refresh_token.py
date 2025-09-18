@@ -17,6 +17,6 @@ class RefreshTokenModel(Base):
     user_id = Column(Integer, ForeignKey('user_.id'), nullable=False)
     expires_at = Column(DateTime, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.now(), nullable=False)
-    revoked = Column(Boolean, nullable=False, default=False)
+    is_revoked = Column(Boolean, nullable=False, default=False)
 
     user = relationship('UserModel', back_populates='refresh_token')
