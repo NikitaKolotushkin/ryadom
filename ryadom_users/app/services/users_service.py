@@ -241,7 +241,7 @@ class UsersService:
         result = await self.session.execute(
             select(RefreshTokenModel)
             .where(RefreshTokenModel.token == token)
-            .where(RefreshTokenModel.revoked == False)
+            .where(RefreshTokenModel.is_revoked == False)
             .where(RefreshTokenModel.expires_at > datetime.now())
         )
 
