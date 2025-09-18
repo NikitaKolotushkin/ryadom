@@ -1,6 +1,7 @@
 import os
 import httpx
 
+import ryadom_schemas.auth as schemas_auth
 import ryadom_schemas.events as schemas_events
 import ryadom_schemas.members as schemas_members
 import ryadom_schemas.users as schemas_users
@@ -55,6 +56,30 @@ class RouterService:
     async def delete_user_from_user_service(self, user_id: int):
         async with httpx.AsyncClient() as client:
             response = await client.delete(f'{self.users_service_url}/users/{user_id}')
+
+            response.raise_for_status()
+
+            return response.json()
+        
+    async def login_user_from_user_service(self, login_data: schemas_auth.LoginRequest):
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f'{self.users_service_url}/auth/login', json=login_data.model_dump())
+
+            response.raise_for_status()
+
+            return response.json()
+        
+    async def refresh_token_from_user_service(self, refresh_token: str):
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f'{self.users_service_url}/auth/refresh', json={'refresh_token': refresh_token})
+
+            response.raise_for_status()
+
+            return response.json()
+        
+    async def logout_user_from_user_service(self, refresh_token: str):
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f'{self.users_service_url}/auth/logout', json={'refresh_token': refresh_token})
 
             response.raise_for_status()
 
