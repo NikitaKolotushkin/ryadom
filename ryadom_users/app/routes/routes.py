@@ -81,24 +81,15 @@ async def login(
     service: UsersService = Depends(get_users_service)
 ):
     """Аутентификация пользователя и выдача токена"""
-    user = await service.authenticate_user(login_data.email, login_data.password)
-
-    if not user:
-        raise HTTPException(status_code=401, detail='Invalid email or password')
-
-    access_token = create_access_token(data={'sub': str(user.id)})
+    try:
+        return await service.login(
+            login_data.email, 
+            login_data.password, 
+            login_data.remember_me
+        )
     
-    refresh_token = await service.create_refresh_token(
-        user.id,
-        remember_me=login_data.remember_me
-    )
-
-    return {
-        'access_token': access_token,
-        'refresh_token': refresh_token,
-        'token_type': 'bearer',
-        'expires_in': 1800
-    }
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
     
 @router.post('/auth/refresh', response_model=schemas_auth.Token)
@@ -108,16 +99,11 @@ async def refresh_token(
     service: UsersService = Depends(get_users_service)
 ):
     """Обновление access-токена с помощью refresh-токена"""
-    user = await service.validate_refresh_token(refresh_token)
-
-    new_access_token = create_access_token(data={'sub': str(user.id)})
-
-    return {
-        'access_token': new_access_token,
-        'refresh_token': refresh_token,
-        'token_type': 'bearer',
-        'expires_in': 1800
-    }
+    try:
+        return await service.refresh_access_token(refresh_token)
+    
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.post('/auth/logout', response_model=dict)
@@ -127,5 +113,5 @@ async def logout(
     service: UsersService = Depends(get_users_service)
 ):
     """Выход из системы"""
-    await service.revoke_refresh_token(refresh_token)
-    return {'message': 'Successfully logged out'}
+    await service.logout(refresh_token)
+    return {'detail': 'Successfully logged out'}

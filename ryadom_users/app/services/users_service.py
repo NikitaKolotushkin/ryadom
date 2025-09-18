@@ -8,6 +8,7 @@ import typing
 import ryadom_schemas.users as schemas_users
 import ryadom_schemas.auth as schemas_auth
 
+from app.core.security import create_access_token
 from app.models.refresh_token import RefreshTokenModel
 from app.models.user import UserModel
 
@@ -275,3 +276,80 @@ class UsersService:
         )
 
         await self.session.commit()
+
+    async def login(self, email: str, password: str, remember_me: str = False) -> schemas_auth.Token:
+        """
+        Аутентифицирует пользователя и возвращает пару токенов
+        
+        Args:
+            email: email пользователя
+            password: пароль
+            remember_me: флаг "запомнить меня"
+            
+        Returns:
+            Token: объект с access и refresh токенами
+            
+        Raises:
+            ValueError: при неверных учетных данных
+        """
+        user = await self.authenticate_user(email, password)
+
+        if not user:
+            raise ValueError('Invalid email or password')
+
+        return await self._create_tokens(user.id, remember_me=remember_me)
+
+    async def refresh_access_token(self, refresh_token: str) -> schemas_auth.Token:
+        """
+        Обновляет access-токен с использованием refresh-токена
+        
+        Args:
+            refresh_token: текущий refresh-токен
+            
+        Returns:
+            Token: новый access-токен с тем же refresh-токеном
+            
+        Raises:
+            ValueError: при невалидном refresh-токене
+        """
+        user = await self.validate_refresh_token(refresh_token)
+        return await self._create_tokens(user.id, existing_refresh_token=refresh_token)
+
+    async def logout(self, refresh_token: str) -> None:
+        """
+        Отзывает refresh-токен
+        
+        Args:
+            refresh_token: refresh-токен для отзыва
+        """
+        await self.revoke_refresh_token(refresh_token)
+
+    async def _create_tokens(self, user_id: int, remember_me: bool = False, existing_refresh_token: str = None) -> schemas_auth.Token:
+        """
+        Создает пару access и refresh токенов
+        
+        Args:
+            user_id: ID пользователя
+            remember_me: флаг "запомнить меня"
+            existing_refresh_token: существующий refresh-токен (при обновлении)
+            
+        Returns:
+            Token: объект с токенами
+        """
+
+        access_token_expire_minutes = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES', 30))
+        expires_in = access_token_expire_minutes * 60
+
+        access_token = create_access_token(data={'sub': str(user_id)})
+
+        if existing_refresh_token:
+            refresh_token = existing_refresh_token
+        else:
+            refresh_token = await self.create_refresh_token(user_id, remember_me)
+
+        return schemas_auth.Token(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            token_type='bearer',
+            expires_in=expires_in
+        )
