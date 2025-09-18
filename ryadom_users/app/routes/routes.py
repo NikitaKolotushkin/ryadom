@@ -95,23 +95,23 @@ async def login(
 @router.post('/auth/refresh', response_model=schemas_auth.Token)
 async def refresh_token(
     request: Request,
-    refresh_token: str,
+    token_data: schemas_auth.RefreshTokenRequest,
     service: UsersService = Depends(get_users_service)
 ):
     """Обновление access-токена с помощью refresh-токена"""
     try:
-        return await service.refresh_access_token(refresh_token)
+        return await service.refresh_access_token(token_data.refresh_token)
     
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=401, detail=str(e))
 
 
 @router.post('/auth/logout', response_model=dict)
 async def logout(
     request: Request,
-    refresh_token: str,
+    token_data: schemas_auth.RefreshTokenRequest,
     service: UsersService = Depends(get_users_service)
 ):
     """Выход из системы"""
-    await service.logout(refresh_token)
+    await service.logout(token_data.refresh_token)
     return {'detail': 'Successfully logged out'}
