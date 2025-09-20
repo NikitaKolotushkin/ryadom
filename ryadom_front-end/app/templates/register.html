@@ -4,17 +4,200 @@
 
 <div class="container">
     <div class="form__wrapper">
-        <form action="" method="post">
+        <form id="register_form" method="post">
             <h3>Ryadom</h3>
-            <input type="text" placeholder="Имя">
-            <input type="text" placeholder="Фамилия">
-            <input type="text" placeholder="Отчество (при наличии)">
-            <input type="email" placeholder="Электронная почта СПбГУ">
-            <input type="password" placeholder="Пароль">
-            <input type="password" placeholder="Повторите пароль">
-            <button type="submit" disabled>Зарегистрироваться</button>
+
+            <input type="text" name="name" id="name" placeholder="Имя" required>
+            
+            <input type="text" name="surname" id="surname" placeholder="Фамилия" required>
+            
+            <input type="text" name="patronymic" id="patronymic" placeholder="Отчество (при наличии)">
+            
+            <input type="email" name="email" id="email" placeholder="Электронная почта" required>
+            
+            <input type="password" name="password" id="password" placeholder="Пароль" required minlength="8">
+            
+            <input type="password" name="password_confirm" id="password_confirm" placeholder="Повторите пароль" required>
+            
+            <div class="form__errors" id="form-error-message"></div>
+
+            <button type="submit" id="submit-btn" disabled>Зарегистрироваться</button>
+            <a href="/login">Уже есть аккаунт? Войти</a>
         </form>
     </div>
 </div>
+
+<script>
+    'use strict';
+
+    const registerForm = document.getElementById('register_form');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorMessage = document.getElementById('form-error-message');
+
+    const nameInput = document.getElementById('name');
+    const surnameInput = document.getElementById('surname');
+    const patronymicInput = document.getElementById('patronymic');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const passwordConfirmInput = document.getElementById('password_confirm');
+
+    const errorClass = 'input-error';
+
+    function removeSpaces(value) {
+        return value.replace(/\s/g, '');
+    }
+
+    function preventSpaces(event) {
+        const cursorPosition = this.selectionStart;
+        
+        const newValue = removeSpaces(this.value);
+        
+        if (this.value !== newValue) {
+            this.value = newValue;
+            
+            this.setSelectionRange(cursorPosition - 1, cursorPosition - 1);
+        }
+    }
+
+    [nameInput, surnameInput, patronymicInput, emailInput, passwordInput, passwordConfirmInput].forEach(field => {
+        field.addEventListener('input', preventSpaces);
+        field.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                const newValue = removeSpaces(this.value);
+                if (this.value !== newValue) {
+                    this.value = newValue;
+                }
+            }, 0);
+        });
+    });
+
+    function clearErrorHighlights() {
+        [nameInput, surnameInput, emailInput, passwordInput, passwordConfirmInput].forEach(input => {
+            input.classList.remove(errorClass);
+        })
+    }
+
+    function validateForm() {
+        clearErrorHighlights();
+        hideError();
+
+        const errors = [];
+
+        if (!nameInput.value.trim()) {
+            errors.push({
+                field: nameInput,
+                message: 'Имя обязательно для заполнения'
+            });
+        }
+
+        if (!surnameInput.value.trim()) {
+            errors.push({
+                field: surnameInput,
+                message: 'Фамилия обязательна для заполнения'
+            });
+        }
+
+        if (!emailInput.value.trim()) {
+            errors.push({
+               field: emailInput,
+               message: 'Электронная почта обязательна для заполнения' 
+            });
+        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailInput.value)) {
+            errors.push({ 
+                field: emailInput, 
+                message: 'Некорректный формат email' 
+            });
+        }
+
+        if (passwordInput.value.trim().length < 8) {
+            errors.push({
+               field: passwordInput,
+               message: 'Пароль должен состоять минимум из 8 символов' 
+            });
+        }
+
+        if (passwordInput.value.trim() !== passwordConfirmInput.value.trim()) {
+            errors.push({
+                field: passwordConfirmInput,
+                message: 'Пароли не совпадают'
+            });
+        }
+
+        if (errors.length > 0) {
+            const firstError = errors[0];
+            
+            firstError.field.classList.add(errorClass);
+            
+            showError(firstError.message);
+            
+            submitBtn.disabled = true;
+            
+            return false;
+        }
+
+        submitBtn.disabled = false;
+        return true;
+    }
+
+    [nameInput, surnameInput, emailInput, passwordInput, passwordConfirmInput].forEach(field => {
+        field.addEventListener('input', validateForm);
+        field.addEventListener('blur', validateForm);
+    });
+
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!validateForm()) return;
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Регистрируем...';
+        
+        hideError();
+
+        try {
+            
+            const userData = {
+                name: nameInput.value.trim(),
+                surname: surnameInput.value.trim(),
+                email: emailInput.value.trim(),
+                password: passwordInput.value
+            }
+
+            // if (patronymicInput.value.trim()) {
+            //     userData.patronymic = patronymicInput.value.trim();
+            // }
+
+            const response = await fetch('http://localhost:8080/api/users/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(userData),
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                window.location.href = '/';
+            }
+
+        } catch (error) {
+            showError('Ошибка соединения с сервером. Проверьте интернет-соединение.');
+            console.error('Registration error:', error);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Зарегистрироваться';
+        }
+    });
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+    }
+
+    function hideError() {
+        errorMessage.style.display = 'none';
+    }
+</script>
 
 {% endblock %}
