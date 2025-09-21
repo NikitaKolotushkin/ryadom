@@ -4,10 +4,12 @@
 import typing
 
 import ryadom_schemas.users as schemas_users
+import ryadom_schemas.auth as schemas_auth
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import create_access_token
 from app.database import get_async_session
 from app.services.users_service import UsersService
 
@@ -69,3 +71,47 @@ async def delete_user(request: Request, user_id: int, service: UsersService = De
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+# AUTH
+
+@router.post('/auth/login', response_model=schemas_auth.Token)
+async def login(
+    request: Request,
+    login_data: schemas_auth.LoginRequest,
+    service: UsersService = Depends(get_users_service)
+):
+    """Аутентификация пользователя и выдача токена"""
+    try:
+        return await service.login(
+            login_data.email, 
+            login_data.password, 
+            login_data.remember_me
+        )
+    
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    
+@router.post('/auth/refresh', response_model=schemas_auth.Token)
+async def refresh_token(
+    request: Request,
+    token_data: schemas_auth.RefreshTokenRequest,
+    service: UsersService = Depends(get_users_service)
+):
+    """Обновление access-токена с помощью refresh-токена"""
+    try:
+        return await service.refresh_access_token(token_data.refresh_token)
+    
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=str(e))
+
+
+@router.post('/auth/logout', response_model=dict)
+async def logout(
+    request: Request,
+    token_data: schemas_auth.RefreshTokenRequest,
+    service: UsersService = Depends(get_users_service)
+):
+    """Выход из системы"""
+    await service.logout(token_data.refresh_token)
+    return {'detail': 'Successfully logged out'}

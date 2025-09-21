@@ -4,17 +4,154 @@
 
 <div class="container">
     <div class="form__wrapper">
-        <form action="" method="post">
+        <form id="register_form" method="post">
             <h3>Ryadom</h3>
-            <input type="text" placeholder="Имя">
-            <input type="text" placeholder="Фамилия">
-            <input type="text" placeholder="Отчество (при наличии)">
-            <input type="email" placeholder="Электронная почта СПбГУ">
-            <input type="password" placeholder="Пароль">
-            <input type="password" placeholder="Повторите пароль">
-            <button type="submit" disabled>Зарегистрироваться</button>
+
+            <input type="text" name="name" id="name" placeholder="Имя" required>
+            
+            <input type="text" name="surname" id="surname" placeholder="Фамилия" required>
+            
+            <input type="text" name="patronymic" id="patronymic" placeholder="Отчество (при наличии)">
+            
+            <input type="email" name="email" id="email" placeholder="Электронная почта" required>
+            
+            <input type="password" name="password" id="password" placeholder="Пароль" required minlength="8">
+            
+            <input type="password" name="password_confirm" id="password_confirm" placeholder="Повторите пароль" required>
+            
+            <div class="form__errors" id="form-error-message"></div>
+
+            <button type="submit" id="submit-btn" disabled>Зарегистрироваться</button>
+            <a href="/login">Уже есть аккаунт? Войти</a>
         </form>
     </div>
 </div>
+
+<script type="module">
+    import { setupSpacePrevention } from '/static/js/form-utils.js';
+    import { createFormValidator } from '/static/js/form-validator.js';
+    import { setupFormSubmit } from '/static/js/form-submitter.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const registerForm = document.getElementById('register_form');
+        const submitBtn = document.getElementById('submit-btn');
+        const errorMessage = document.getElementById('form-error-message');
+        
+        const nameInput = document.getElementById('name');
+        const surnameInput = document.getElementById('surname');
+        const patronymicInput = document.getElementById('patronymic');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const passwordConfirmInput = document.getElementById('password_confirm');
+
+        const errorClass = 'input-error';
+
+        const fields = [
+            nameInput, 
+            surnameInput, 
+            patronymicInput, 
+            emailInput, 
+            passwordInput, 
+            passwordConfirmInput
+        ];
+
+        setupSpacePrevention(fields);
+        
+        const registerValidator = createFormValidator({
+            fields,
+            errorClass,
+            errorMessageElement: errorMessage,
+            validateField: (field) => {
+                if (field === nameInput && !field.value.trim()) {
+                    return {
+                        field,
+                        message: 'Имя обязательно для заполнения'
+                    };
+                }
+
+                if (field === surnameInput && !field.value.trim()) {
+                    return {
+                        field,
+                        message: 'Фамилия обязательна для заполнения'
+                    };
+                }
+
+                if (field === emailInput) {
+                    if (!field.value.trim()) {
+                        return {
+                            field,
+                            message: 'Электронная почта обязательна для заполнения' 
+                        };
+                    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(field.value)) {
+                        return { 
+                            field, 
+                            message: 'Некорректный формат email' 
+                        };
+                    }
+                }
+
+                if (field === passwordInput) {
+                    if (!field.value.trim()) {
+                        return {
+                            field,
+                            message: 'Пароль обязателен для заполнения'
+                        };
+                    }
+                    if (field.value.trim().length < 8) {
+                        return {
+                            field,
+                            message: 'Пароль должен состоять минимум из 8 символов'
+                        };
+                    }
+                }
+
+                if (field === passwordConfirmInput) {
+                    if (!field.value.trim()) {
+                        return {
+                            field,
+                            message: 'Повторите пароль'
+                        };
+                    }
+                    if (passwordInput.value.trim() && passwordInput.value.trim() !== field.value.trim()) {
+                        return {
+                            field,
+                            message: 'Пароли не совпадают'
+                        };
+                    }
+                }
+
+                return null;
+            },
+            onValidationSuccess: () => {
+                submitBtn.disabled = false;
+            },
+            onValidationFailure: (error) => {
+                submitBtn.disabled = true;
+            }
+        });
+
+        registerValidator.setupValidation();
+
+        setupFormSubmit({
+            form: registerForm,
+            submitBtn,
+            fields,
+            errorMessageElement: errorMessage,
+            prepareData: () => ({
+                name: nameInput.value.trim(),
+                surname: surnameInput.value.trim(),
+                email: emailInput.value.trim(),
+                password: passwordInput.value
+            }),
+            apiUrl: 'http://localhost:8080/api/users/',
+            onSuccess: () => {
+                window.location.href = '/';
+            },
+            validate: registerValidator.validateForm,
+            loadingText: 'Регистрируем...',
+            defaultText: 'Зарегистрироваться'
+        });
+    });
+</script>
 
 {% endblock %}

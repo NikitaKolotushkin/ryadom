@@ -47,6 +47,10 @@ button:hover {
     cursor: pointer;
 }
 
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
 .container {
     width: 68.75vw;
     margin: 0 auto;
@@ -525,7 +529,8 @@ form input::placeholder {
 }
 
 form button {
-    background-color: rgb(163 166 175);
+    background-color: var(--accent-color);
+    
     color: var(--main-bg-color);
     font-size: 2.2vh;
     font-weight: 400;
@@ -536,8 +541,25 @@ form button {
     border-radius: 4vh;
 }
 
+form button:disabled {
+    background-color: rgb(163 166 175);
+}
+
 form > a {
     color: var(--accent-color);
+}
+
+.form__remember-me {
+    font-size: 2.2vh;
+    color: var(--accent-color);
+}
+
+.form__label {
+    margin-left: 1vw;
+}
+
+.form__label:hover {
+    cursor: pointer;
 }
 
 /* FOOTER */

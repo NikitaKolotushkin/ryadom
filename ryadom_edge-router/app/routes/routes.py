@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
+
 from httpx import HTTPStatusError
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Cookie, HTTPException, Response, Request
 
 from app.services.router_service import RouterService
+import ryadom_schemas.auth as schemas_auth
 import ryadom_schemas.events as schemas_events
 import ryadom_schemas.members as schemas_members
 import ryadom_schemas.users as schemas_users
@@ -61,6 +64,91 @@ async def delete_user(request: Request, user_id: int):
         return user_data
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
+    
+
+@router.post('/auth/login', response_model=dict)
+async def login(request: Request, login_data: schemas_auth.LoginRequest, response: Response):
+    try:
+        token_data = await router_service.login_user_from_user_service(login_data)
+
+        response.set_cookie(
+            key='access_token',
+            value=token_data['access_token'],
+            httponly=True,
+            secure=request.url.scheme == 'https',   # True в проде
+            samesite='lax',
+            max_age=token_data['expires_in']
+        )
+
+        refresh_max_age = 60 * 60 * 24 * int(os.getenv('REFRESH_TOKEN_EXPIRE_DAYS', 30))
+        response.set_cookie(
+            key='refresh_token',
+            value=token_data['refresh_token'],
+            httponly=True,
+            secure=request.url.scheme == 'https',
+            samesite='lax',
+            max_age=refresh_max_age
+        )
+
+        return {
+            'status': 'success',
+            'expires_in': token_data['expires_in']
+        }
+    
+    except HTTPStatusError as e:
+        raise HTTPException(
+            status_code=e.response.status_code, 
+            detail=e.response.json().get('detail', 'Ошибка аутентификации')
+        )
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+@router.post('/auth/refresh', response_model=dict)
+async def refresh_access_token(request: Request, response: Response, refresh_token: str = Cookie(None, alias='refresh_token')):
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail='Refresh токен не найден')
+    
+    try:
+        token_data = await router_service.refresh_token_from_user_service(refresh_token)
+
+        response.set_cookie(
+            key='access_token',
+            value=token_data['access_token'],
+            httponly=True,
+            secure=request.url.scheme == 'https',
+            samesite='lax',
+            max_age=token_data['expires_in']
+        )
+
+        return {
+            'status': 'success',
+            'expires_in': token_data['expires_in']
+        }
+    
+    except HTTPStatusError as e:
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+
+        raise HTTPException(
+            status_code=e.response.status_code, 
+            detail='Token refresh failed'
+        )
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+@router.post('/auth/logout', response_model=dict)
+async def logout(request: Request, response: Response, refresh_token: str = Cookie(None, alias='refresh_token')):
+    if refresh_token:
+        await router_service.logout_user_from_user_service(refresh_token)
+
+    response.delete_cookie('access_token')
+    response.delete_cookie('refresh_token')
+
+    return {'detail': 'Successfully logged out'}
 
 
 # EVENTS    
