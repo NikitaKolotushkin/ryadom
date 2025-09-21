@@ -11,6 +11,11 @@
             
             <input type="password" name="password" id="password" placeholder="Пароль" required>
             
+            <div class="form__remember-me" style="text-align: left; display: flex; align-items: center;">
+                <input type="checkbox" id="remember_me" name="remember_me" class="form__checkbox">
+                <label for="remember_me" class="form__label">Запомнить меня</label>
+            </div>
+
             <div class="form__errors" id="form-error-message"></div>
 
             <button type="submit" id="submit-btn" disabled>Войти</button>
@@ -31,6 +36,7 @@
 
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
+        const rememberMeInput = document.getElementById('remember_me');
 
         const errorClass = 'input-error';
 
@@ -47,7 +53,7 @@
                     if (!field.value.trim()) {
                         return {
                             field,
-                            message: 'Электронная почта обязательна для заполнения'
+                            message: 'Почта обязательна для заполнения'
                         };
                     } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(field.value)) {
                         return { 
@@ -85,7 +91,8 @@
             errorMessageElement: errorMessage,
             prepareData: () => ({
                 email: emailInput.value.trim(),
-                password: passwordInput.value
+                password: passwordInput.value,
+                remember_me: rememberMeInput.checked
             }),
             apiUrl: 'http://localhost:8080/api/auth/login',
             onSuccess: () => {

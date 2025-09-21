@@ -47,6 +47,10 @@ button:hover {
     cursor: pointer;
 }
 
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
 .container {
     width: 68.75vw;
     margin: 0 auto;
@@ -543,6 +547,19 @@ form button:disabled {
 
 form > a {
     color: var(--accent-color);
+}
+
+.form__remember-me {
+    font-size: 2.2vh;
+    color: var(--accent-color);
+}
+
+.form__label {
+    margin-left: 1vw;
+}
+
+.form__label:hover {
+    cursor: pointer;
 }
 
 /* FOOTER */
