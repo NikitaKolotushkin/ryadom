@@ -94,7 +94,7 @@
                 password: passwordInput.value,
                 remember_me: rememberMeInput.checked
             }),
-            apiUrl: 'http://localhost:8080/api/auth/login',
+            apiUrl: '/api/auth/login',
             onSuccess: () => {
                 window.location.href = '/';
             },
